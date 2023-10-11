@@ -4,15 +4,12 @@
 
 from setuptools import setup, find_packages
 
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
-
-with open('HISTORY.rst') as history_file:
-    history = history_file.read()
 
 requirements = [ ]
 
-test_requirements = ['pytest>=3', ]
+test_requirements = ['pytest>=3', 'chattool>=2.3.0']
 
 setup(
     author="Rex Wang",
@@ -31,7 +28,7 @@ setup(
     description="Interact with ChatGPT in terminal via chattool",
     install_requires=requirements,
     license="MIT license",
-    long_description=readme + '\n\n' + history,
+    # long_description=readme + '\n\n' + history ,
     include_package_data=True,
     keywords='askchat',
     name='askchat',
