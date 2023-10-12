@@ -4,6 +4,8 @@
 
 from setuptools import setup, find_packages
 
+VERSION = '0.0.2'
+
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
@@ -36,6 +38,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/rexwzh/askchat',
-    version='0.0.1',
+    version=VERSION,
     zip_safe=False,
 )
