@@ -1,5 +1,4 @@
 """Main module."""
-import chattool
 from chattool import Chat
 import asyncio
 from argparse import ArgumentParser

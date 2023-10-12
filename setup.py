@@ -7,9 +7,9 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-requirements = [ ]
+requirements = ['chattool>=2.3.0']
 
-test_requirements = ['pytest>=3', 'chattool>=2.3.0']
+test_requirements = ['pytest>=3']
 
 setup(
     author="Rex Wang",
