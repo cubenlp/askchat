@@ -6,3 +6,32 @@
 
 
 Interact with ChatGPT in terminal via chattool
+
+## Installation
+
+```bash
+pip install askchat
+```
+
+## Usage
+
+A simple way:
+```bash
+ask hello
+```
+
+Ask with more options via `askchat`:
+```bash
+# ask with a specific model
+askchat hello -m "gpt-4"
+```
+
+Other options:
+```bash
+# current version
+askchat -v 
+# Get debug log
+askchat --debug
+# get valid models
+askchat --valid-models
+```
