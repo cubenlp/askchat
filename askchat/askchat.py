@@ -16,10 +16,12 @@ def ask():
     """Interact with ChatGPT in terminal via chattool"""
     # parse arguments
     parser = ArgumentParser()
-    parser.add_argument('message', type=str, help='User message')
+    parser.add_argument('message', help='User message', default='', nargs='*')
     args = parser.parse_args()
     msg = args.message
-    
+    if isinstance(msg, list):
+        msg = ' '.join(msg)
+    assert len(msg.strip()), 'Please specify message'
     # call
     chat = Chat(msg)
     asyncio.run(show_resp(chat))
@@ -29,7 +31,7 @@ def main():
     # parse arguments
     parser = ArgumentParser()
     ## use nargs='?' to make message optional
-    parser.add_argument('message', help='User message', default='', nargs='?')
+    parser.add_argument('message', help='User message', default='', nargs='*')
     parser.add_argument('-v', '--version', action='version', version=VERSION)
     parser.add_argument('--debug', action='store_true', help='Print debug log')
     parser.add_argument('--valid-models', action='store_true', help='Print valid models')
@@ -46,6 +48,8 @@ def main():
         return
     # get message and model
     model, msg = args.model, args.message
+    if isinstance(msg, list):
+        msg = ' '.join(msg)
     assert len(msg.strip()), 'Please specify message'
     # call
     chat = Chat(msg, model=model)
