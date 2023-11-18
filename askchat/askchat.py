@@ -39,7 +39,7 @@ def main():
     parser.add_argument('-m', '--model', default=None, help='Model name')
     parser.add_argument('--base-url', default=None, help='base url of the api(without suffix `/v1`)')
     parser.add_argument("--api-key", default=None, help="API key")
-    parser.add_argument('--generate-config', action="store_true", help="Generate a configuration file by environment table.")
+    parser.add_argument('--generate-config', action="store_true", help="Generate a configuration file by environment table")
     args = parser.parse_args()
     # show debug log
     if args.debug:
@@ -76,7 +76,8 @@ def main():
             f.write(f"OPENAI_API_KEY={api_key}\n\n")
             f.write("# The base url of the API (without suffix /v1)\n")
             f.write(f"OPENAI_API_BASE_URL={base_url}\n\n")
-            f.write("# The model name. You can use `askchat --all-valid-models` to see the valid models.\n")
+            f.write("# The model name.\n" +\
+                    "# You can use `askchat --all-valid-models` to see the valid models\n")
             f.write(f"OPENAI_API_MODEL={model}\n\n")
             print("Created config file at", CONFIG_FILE)
         return
