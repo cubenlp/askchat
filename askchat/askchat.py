@@ -73,11 +73,11 @@ def main():
                     "# Current version: " + VERSION + "\n\n")
             # write the environment table
             f.write("# Your API key\n")
-            f.write(f"OPENAI_API_KEY={api_key}\n")
+            f.write(f"OPENAI_API_KEY={api_key}\n\n")
             f.write("# The base url of the API (without suffix /v1)\n")
-            f.write(f"OPENAI_API_BASE_URL={base_url}\n")
+            f.write(f"OPENAI_API_BASE_URL={base_url}\n\n")
             f.write("# The model name. You can use `askchat --all-valid-models` to see the valid models.\n")
-            f.write(f"OPENAI_API_MODEL={model}\n")
+            f.write(f"OPENAI_API_MODEL={model}\n\n")
             print("Created config file at", CONFIG_FILE)
         return
 
