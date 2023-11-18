@@ -4,12 +4,12 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '0.0.4'
+VERSION = '0.0.5'
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-requirements = ['chattool>=2.3.0']
+requirements = ['chattool>=2.5.0']
 
 test_requirements = ['pytest>=3']
 

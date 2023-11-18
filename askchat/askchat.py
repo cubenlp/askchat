@@ -8,10 +8,8 @@ VERSION = askchat.__version__
 
 # print the response in a typewriter way
 async def show_resp(chat):
-    async for resp in chat.async_stream_responses():
-        for char in resp.delta_content:
-            print(char, end='', flush=True)
-            await asyncio.sleep(0.015)
+    async for char in chat.async_stream_responses(textonly=True):
+        print(char, end='', flush=True)
 
 def ask():
     """Interact with ChatGPT in terminal via chattool"""
