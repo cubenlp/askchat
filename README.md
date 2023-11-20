@@ -23,7 +23,12 @@ ask hello
 Ask with more options via `askchat`:
 ```bash
 # ask with a specific model
-askchat hello -m "gpt-4"
+askchat hello -m "baichuan2" --base_url "localhost:8000"
+```
+
+Generate config file for default options:
+```bash
+askchat --generate-config
 ```
 
 Other options:
@@ -32,6 +37,8 @@ Other options:
 askchat -v 
 # Get debug log
 askchat --debug
-# get valid models
+# get valid models that contains "gpt"
 askchat --valid-models
+# get all valid models
+askchat --all-valid-models
 ```
