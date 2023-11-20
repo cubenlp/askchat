@@ -9,7 +9,7 @@ VERSION = '0.1.1'
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-requirements = ['chattool>=2.5.0']
+requirements = ['chattool>=2.5.0', "python-dotenv>=0.17.0"]
 
 test_requirements = ['pytest>=3']
 
