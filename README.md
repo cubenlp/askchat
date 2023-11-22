@@ -5,7 +5,7 @@
 [![Coverage](https://codecov.io/gh/rexwzh/askchat/branch/main/graph/badge.svg)](https://codecov.io/gh/rexwzh/askchat)
 
 
-Interact with ChatGPT in terminal via chattool
+Interact with ChatGPT in terminal via chattool.
 
 ## Installation
 
@@ -31,14 +31,38 @@ Generate config file for default options:
 askchat --generate-config
 ```
 
+You might edit the config at `~/.askchat/.env`.
+
 Other options:
 ```bash
 # current version
 askchat -v 
-# Get debug log
+# print the debug log
 askchat --debug
 # get valid models that contains "gpt"
 askchat --valid-models
 # get all valid models
 askchat --all-valid-models
+```
+
+## Advance usage
+
+You can manage your chats with `askchat`:
+
+```bash
+askchat hello
+# continue the last chat: -c
+askchat -c tell me a joke please
+# save the chat: -s/--save
+askchat -s joke
+# load the chat: -l/--load
+askchat -l joke
+# delete the chat: -d/--delete
+askchat -d joke
+# list all saved chats: --list
+askchat --list
+# print the last chat: -p/--print
+askchat -p
+# print the given chat: -p/--print
+askchat -p joke
 ```

@@ -3,12 +3,14 @@
 from argparse import ArgumentParser
 from pprint import pprint
 from dotenv import load_dotenv, set_key
-import asyncio, os, uuid
+import asyncio, os, uuid, json, shutil
 import askchat
 
 VERSION = askchat.__version__
 CONFIG_PATH = os.path.expanduser("~/.askchat")
 CONFIG_FILE = os.path.expanduser("~/.askchat/.env")
+LAST_CHAT_FILE = os.path.expanduser("~/.askchat/_last_chat.json")
+os.makedirs(CONFIG_PATH, exist_ok=True)
 ## read para from config file
 if os.path.exists(CONFIG_FILE):
     load_dotenv(CONFIG_FILE, override=True)
@@ -18,9 +20,12 @@ from chattool import Chat, debug_log
 
 # print the response in a typewriter way
 async def show_resp(chat, delay=0.01):
+    msg = ''
     async for char in chat.async_stream_responses(textonly=True):
         print(char, end='', flush=True)
+        msg += char
         await asyncio.sleep(delay)
+    return msg
 
 def ask():
     """Interact with ChatGPT in terminal via chattool"""
@@ -45,6 +50,14 @@ def main():
     parser.add_argument('-m', '--model', default=None, help='Model name')
     parser.add_argument('--base-url', default=None, help='base url of the api(without suffix `/v1`)')
     parser.add_argument("--api-key", default=None, help="API key")
+    ## Chat with history
+    parser.add_argument('-c', action='store_true', help='Continue the last conversation')
+    parser.add_argument('-s', "--save", default=None, help="Save the conversation to a file")
+    parser.add_argument("-l", "--load", default=None, help="Load the conversation from a file")
+    parser.add_argument("-p", "--print", default=None, nargs='*', help="Print the conversation from " +\
+                        "a file or the last conversation if no file is specified")
+    parser.add_argument("-d", "--delete", default=None, help="Delete the conversation from a file")
+    parser.add_argument("--list", action="store_true", help="List all the conversation files")
     ## other options
     parser.add_argument('--debug', action='store_true', help='Print debug log')
     parser.add_argument('--valid-models', action='store_true', help='Print valid models that contain "gpt" in their names')
@@ -82,7 +95,6 @@ def main():
             os.rename(CONFIG_FILE, tmp_file)
             print(f"Moved old config file to {tmp_file}")
         # save the config file
-        os.makedirs(CONFIG_PATH, exist_ok=True)
         with open(CONFIG_FILE, "w") as f:
             # description for the config file
             f.write("#!/bin/bash\n" +\
@@ -102,12 +114,60 @@ def main():
         print("Created config file at", CONFIG_FILE)
         return
 
-    # get message, model, and base url
+    # deal with chat history
+    call_history = False
+    ## load chat
+    if args.load is not None:
+        new_file = os.path.join(CONFIG_PATH, args.load) + ".json"
+        shutil.copyfile(new_file, LAST_CHAT_FILE)
+        print("Loaded conversation from", new_file)
+        call_history = True
+    ## save chat
+    if args.save is not None:
+        new_file = os.path.join(CONFIG_PATH, args.save) + ".json"
+        shutil.copyfile(LAST_CHAT_FILE, new_file)
+        print("Saved conversation to", new_file)
+        call_history = True
+    ## delete chat
+    if args.delete is not None:
+        new_file = os.path.join(CONFIG_PATH, args.delete) + ".json"
+        if os.path.exists(new_file):
+            os.remove(new_file)
+            print("Deleted conversation at", new_file)
+        else:
+            print("No such file", new_file)
+        call_history = True
+    ## list chat
+    if args.list:
+        print("All conversation files:")
+        for file in os.listdir(CONFIG_PATH):
+            if not file.startswith("_") and file.endswith(".json"):
+                print(" -", file[:-5])
+        call_history = True
+    if call_history: return
+    ## print chat
+    if args.print is not None:
+        names = args.print
+        assert len(names) <= 1, "Only one file can be specified"
+        new_file = os.path.join(CONFIG_PATH, names[0]) + ".json" if len(names) else LAST_CHAT_FILE
+        with open(new_file, "r") as f:
+            chatlog = json.load(f)
+        Chat(chatlog).print_log()
+        call_history = True
+    
+    # Initial message
     msg = args.message
     if isinstance(msg, list):
         msg = ' '.join(msg)
     assert len(msg.strip()), 'Please specify message'
+    if args.c and os.path.exists(LAST_CHAT_FILE):
+        with open(LAST_CHAT_FILE, "r") as f:
+            chatlog = json.load(f)
+        chatlog.append({"role":"user", "content":msg})
+        msg = chatlog
     
     # call the function
     chat = Chat(msg, model=args.model, base_url=args.base_url, api_key=args.api_key)
-    asyncio.run(show_resp(chat))
+    msg = asyncio.run(show_resp(chat))
+    chat.assistant(msg)
+    chat.save(LAST_CHAT_FILE, mode='w')
