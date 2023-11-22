@@ -144,7 +144,6 @@ def main():
             if not file.startswith("_") and file.endswith(".json"):
                 print(" -", file[:-5])
         call_history = True
-    if call_history: return
     ## print chat
     if args.print is not None:
         names = args.print
@@ -154,7 +153,7 @@ def main():
             chatlog = json.load(f)
         Chat(chatlog).print_log()
         call_history = True
-    
+    if call_history: return
     # Initial message
     msg = args.message
     if isinstance(msg, list):
