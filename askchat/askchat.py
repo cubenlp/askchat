@@ -157,28 +157,30 @@ def main():
         names = args.print
         assert len(names) <= 1, "Only one file can be specified"
         new_file = os.path.join(CONFIG_PATH, names[0]) + ".json" if len(names) else LAST_CHAT_FILE
-        with open(new_file, "r") as f:
-            chatlog = json.load(f)
-        Chat(chatlog).print_log()
+        chat = Chat.load(new_file)
+        chat.print_log()
         call_history = True
     if call_history: return
     # Initial message
     msg = args.message
     if isinstance(msg, list):
-        msg = ' '.join(msg)
-    assert len(msg.strip()), 'Please specify message'
-    if os.path.exists(LAST_CHAT_FILE):
-        with open(LAST_CHAT_FILE, "r") as f:
-            chatlog = json.load(f)
-        if args.c:
-            msg = chatlog + [{"role":"user", "content":msg}]
-        elif args.r:
-            if len(chatlog) > 0:chatlog.pop()
-            if len(chatlog) > 0:chatlog.pop()
-            msg = chatlog + [{"role":"user", "content":msg}]
-    
-    # call the function
+        msg = ' '.join(msg).strip()
     chat = Chat(msg)
-    msg = asyncio.run(show_resp(chat))
-    chat.assistant(msg)
+    if os.path.exists(LAST_CHAT_FILE):
+        if args.c:
+            chat = Chat.load(LAST_CHAT_FILE)
+            chat.user(msg)
+        elif args.r:
+            # pop out the last two messages
+            chat = Chat.load(LAST_CHAT_FILE)
+            assert len(chat) > 1, "You should have at least two messages in the conversation"
+            chat.pop()
+            if len(msg) != 0: # not empty message
+                chat.pop()
+                chat.user(msg)
+            # if msg is empty, regenerate the last message
+    assert len(chat) > 0 and len(chat.last_message) > 0, "Please specify message!"
+    # call the function
+    newmsg = asyncio.run(show_resp(chat))
+    chat.assistant(newmsg)
     chat.save(LAST_CHAT_FILE, mode='w')

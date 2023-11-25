@@ -53,6 +53,10 @@ You can manage your chats with `askchat`:
 askchat hello
 # continue the last chat: -c
 askchat -c tell me a joke please
+# regenerate the last conversation: -r
+askchat -r
+# regenerate the last conversation with new message: -r
+askchat -r give me some jokes please
 # save the chat: -s/--save
 askchat -s joke
 # load the chat: -l/--load
