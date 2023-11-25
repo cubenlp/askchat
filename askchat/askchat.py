@@ -52,6 +52,7 @@ def main():
     parser.add_argument("--api-key", default=None, help="API key")
     ## Chat with history
     parser.add_argument('-c', action='store_true', help='Continue the last conversation')
+    parser.add_argument('-r', action='store_true', help='Regenerate the last conversation')
     parser.add_argument('-s', "--save", default=None, help="Save the conversation to a file")
     parser.add_argument("-l", "--load", default=None, help="Load the conversation from a file")
     parser.add_argument("-p", "--print", default=None, nargs='*', help="Print the conversation from " +\
@@ -66,6 +67,13 @@ def main():
     parser.add_argument('-v', '--version', action='version', version=VERSION)
     args = parser.parse_args()
     
+    # set values
+    if args.api_key:
+        os.environ['OPENAI_API_KEY'] = args.api_key
+    if args.base_url:
+        os.environ['OPENAI_API_BASE_URL'] = args.base_url
+    if args.model:
+        os.environ['OPENAI_API_MODEL'] = args.model
     # show debug log
     if args.debug:
         debug_log()
@@ -92,7 +100,7 @@ def main():
             os.makedirs("/tmp", exist_ok=True)
             tmp_file = os.path.join("/tmp", str(uuid.uuid4())[:8] + ".askchat.env")
             # move the old config file to a temporary file
-            os.rename(CONFIG_FILE, tmp_file)
+            shutil.move(CONFIG_FILE, tmp_file)
             print(f"Moved old config file to {tmp_file}")
         # save the config file
         with open(CONFIG_FILE, "w") as f:
@@ -149,24 +157,30 @@ def main():
         names = args.print
         assert len(names) <= 1, "Only one file can be specified"
         new_file = os.path.join(CONFIG_PATH, names[0]) + ".json" if len(names) else LAST_CHAT_FILE
-        with open(new_file, "r") as f:
-            chatlog = json.load(f)
-        Chat(chatlog).print_log()
+        chat = Chat.load(new_file)
+        chat.print_log()
         call_history = True
     if call_history: return
     # Initial message
     msg = args.message
     if isinstance(msg, list):
-        msg = ' '.join(msg)
-    assert len(msg.strip()), 'Please specify message'
-    if args.c and os.path.exists(LAST_CHAT_FILE):
-        with open(LAST_CHAT_FILE, "r") as f:
-            chatlog = json.load(f)
-        chatlog.append({"role":"user", "content":msg})
-        msg = chatlog
-    
+        msg = ' '.join(msg).strip()
+    chat = Chat(msg)
+    if os.path.exists(LAST_CHAT_FILE):
+        if args.c:
+            chat = Chat.load(LAST_CHAT_FILE)
+            chat.user(msg)
+        elif args.r:
+            # pop out the last two messages
+            chat = Chat.load(LAST_CHAT_FILE)
+            assert len(chat) > 1, "You should have at least two messages in the conversation"
+            chat.pop()
+            if len(msg) != 0: # not empty message
+                chat.pop()
+                chat.user(msg)
+            # if msg is empty, regenerate the last message
+    assert len(chat) > 0 and len(chat.last_message) > 0, "Please specify message!"
     # call the function
-    chat = Chat(msg, model=args.model, base_url=args.base_url, api_key=args.api_key)
-    msg = asyncio.run(show_resp(chat))
-    chat.assistant(msg)
+    newmsg = asyncio.run(show_resp(chat))
+    chat.assistant(newmsg)
     chat.save(LAST_CHAT_FILE, mode='w')

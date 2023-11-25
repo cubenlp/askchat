@@ -52,6 +52,10 @@ askchat --all-valid-models
 askchat hello
 # 继续上一次对话：-c
 askchat -c 请给我讲个笑话
+# 重新生成最后一次对话：-r
+askchat -r
+# 修改并重新生成最后一次对话：-r
+askchat -r give me some jokes please
 # 保存对话：-s/--save
 askchat -s joke
 # 加载对话：-l/--load
