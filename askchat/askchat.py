@@ -66,6 +66,13 @@ def main():
     parser.add_argument('-v', '--version', action='version', version=VERSION)
     args = parser.parse_args()
     
+    # set values
+    if args.api_key:
+        os.environ['OPENAI_API_KEY'] = args.api_key
+    if args.base_url:
+        os.environ['OPENAI_API_BASE_URL'] = args.base_url
+    if args.model:
+        os.environ['OPENAI_API_MODEL'] = args.model
     # show debug log
     if args.debug:
         debug_log()
@@ -92,7 +99,7 @@ def main():
             os.makedirs("/tmp", exist_ok=True)
             tmp_file = os.path.join("/tmp", str(uuid.uuid4())[:8] + ".askchat.env")
             # move the old config file to a temporary file
-            os.rename(CONFIG_FILE, tmp_file)
+            shutil.move(CONFIG_FILE, tmp_file)
             print(f"Moved old config file to {tmp_file}")
         # save the config file
         with open(CONFIG_FILE, "w") as f:
@@ -166,7 +173,7 @@ def main():
         msg = chatlog
     
     # call the function
-    chat = Chat(msg, model=args.model, base_url=args.base_url, api_key=args.api_key)
+    chat = Chat(msg)
     msg = asyncio.run(show_resp(chat))
     chat.assistant(msg)
     chat.save(LAST_CHAT_FILE, mode='w')
