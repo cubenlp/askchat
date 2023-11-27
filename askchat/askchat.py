@@ -3,20 +3,14 @@
 from argparse import ArgumentParser
 from pprint import pprint
 from dotenv import load_dotenv, set_key
-import asyncio, os, uuid, json, shutil
+import asyncio, os, uuid, shutil
+from chattool import Chat, debug_log, load_envs
 import askchat
 
 VERSION = askchat.__version__
 CONFIG_PATH = os.path.expanduser("~/.askchat")
 CONFIG_FILE = os.path.expanduser("~/.askchat/.env")
 LAST_CHAT_FILE = os.path.expanduser("~/.askchat/_last_chat.json")
-os.makedirs(CONFIG_PATH, exist_ok=True)
-## read para from config file
-if os.path.exists(CONFIG_FILE):
-    load_dotenv(CONFIG_FILE, override=True)
-
-# load chattool after update the config
-from chattool import Chat, debug_log
 
 # print the response in a typewriter way
 async def show_resp(chat, delay=0.01):
@@ -66,14 +60,21 @@ def main():
     parser.add_argument('--generate-config', action="store_true", help="Generate a configuration file by environment table")
     parser.add_argument('-v', '--version', action='version', version=VERSION)
     args = parser.parse_args()
-    
+
     # set values
+    os.makedirs(CONFIG_PATH, exist_ok=True)
+    ## read para from config file
+    if os.path.exists(CONFIG_FILE):
+        load_dotenv(CONFIG_FILE, override=True)
+    ## set para from command line
     if args.api_key:
         os.environ['OPENAI_API_KEY'] = args.api_key
     if args.base_url:
         os.environ['OPENAI_API_BASE_URL'] = args.base_url
     if args.model:
         os.environ['OPENAI_API_MODEL'] = args.model
+    load_envs()
+    
     # show debug log
     if args.debug:
         debug_log()
