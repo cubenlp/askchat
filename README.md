@@ -1,72 +1,78 @@
 # askchat
-[![PyPI version](https://img.shields.io/pypi/v/askchat.svg)](https://pypi.python.org/pypi/askchat)
-[![Tests](https://github.com/rexwzh/askchat/actions/workflows/test.yml/badge.svg)](https://github.com/rexwzh/askchat/actions/workflows/test.yml/)
-[![Documentation Status](https://img.shields.io/badge/docs-github_pages-blue.svg)](https://rexwzh.github.io/askchat/)
-[![Coverage](https://codecov.io/gh/rexwzh/askchat/branch/main/graph/badge.svg)](https://codecov.io/gh/rexwzh/askchat)
 
+[![PyPI版本](https://img.shields.io/pypi/v/askchat.svg)](https://pypi.python.org/pypi/askchat)
+[![测试](https://github.com/rexwzh/askchat/actions/workflows/test.yml/badge.svg)](https://github.com/rexwzh/askchat/actions/workflows/test.yml/)
+[![文档状态](https://img.shields.io/badge/docs-github_pages-blue.svg)](https://rexwzh.github.io/askchat/)
+[![覆盖率](https://codecov.io/gh/rexwzh/askchat/branch/main/graph/badge.svg)](https://codecov.io/gh/rexwzh/askchat)
 
-Interact with ChatGPT in terminal via chattool.
+[English](README-en.md) | [简体中文](README.md)
 
-## Installation
+在命令行中调用 ChatGPT。
+
+## 安装
 
 ```bash
-pip install askchat
+pip install askchat --upgrade
 ```
 
-## Usage
+## 使用方法
 
-A simple way:
+简单运行方式，使用默认的环境变量：
 ```bash
 ask hello
 ```
 
-Ask with more options via `askchat`:
+通过 `askchat` 指定其他选项：
 ```bash
-# ask with a specific model
+# 使用特定模型提问
 askchat hello -m "baichuan2" --base_url "localhost:8000"
 ```
 
-Generate config file for default options:
+通过环境变量生成默认的配置文件，可以在 `~/.askchat/.env` 中编辑配置
 ```bash
 askchat --generate-config
 ```
 
-You might edit the config at `~/.askchat/.env`.
-
-Other options:
+修改配置参数，比如
 ```bash
-# current version
+askchat --config --api-key "your_api_key"
+```
+
+
+其他选项：
+```bash
+# 当前版本
 askchat -v 
-# print the debug log
+# 打印调试日志
 askchat --debug
-# get valid models that contains "gpt"
+# 获取包含"gpt"的有效模型
 askchat --valid-models
-# get all valid models
+# 获取所有有效模型
 askchat --all-valid-models
 ```
 
-## Advance usage
+## 管理对话记录
 
-You can manage your chats with `askchat`:
+使用 `askchat` 管理对话：
 
 ```bash
 askchat hello
-# continue the last chat: -c
-askchat -c tell me a joke please
-# regenerate the last conversation: -r
+# 继续上一次对话：-c
+askchat -c 请给我讲个笑话
+# 重新生成最后一次对话：-r
 askchat -r
-# regenerate the last conversation with new message: -r
+# 修改并重新生成最后一次对话：-r
 askchat -r give me some jokes please
-# save the chat: -s/--save
+# 保存对话：-s/--save
 askchat -s joke
-# load the chat: -l/--load
+# 加载对话：-l/--load
 askchat -l joke
-# delete the chat: -d/--delete
+# 删除对话：-d/--delete
 askchat -d joke
-# list all saved chats: --list
+# 列出所有保存的对话：--list
 askchat --list
-# print the last chat: -p/--print
+# 打印最后一次对话：-p/--print
 askchat -p
-# print the given chat: -p/--print
+# 打印指定的对话：-p/--print
 askchat -p joke
 ```

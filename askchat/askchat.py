@@ -42,8 +42,8 @@ def main():
     ## arguments for chat message
     parser.add_argument('message', help='User message', default='', nargs='*')
     parser.add_argument('-m', '--model', default=None, help='Model name')
-    parser.add_argument('--base-url', default=None, help='base url of the api(without suffix `/v1`)')
-    parser.add_argument("--api-key", default=None, help="API key")
+    parser.add_argument('-b', '--base-url', default=None, help='base url of the api(without suffix `/v1`)')
+    parser.add_argument('-a', "--api-key", default=None, help="OpenAI API key")
     ## Chat with history
     parser.add_argument('-c', action='store_true', help='Continue the last conversation')
     parser.add_argument('-r', action='store_true', help='Regenerate the last conversation')
@@ -60,19 +60,54 @@ def main():
     parser.add_argument('--generate-config', action="store_true", help="Generate a configuration file by environment table")
     parser.add_argument('-v', '--version', action='version', version=VERSION)
     args = parser.parse_args()
+    os.makedirs(CONFIG_PATH, exist_ok=True)
+
+    # generate config file
+    if args.generate_config:
+        api_key, model = os.getenv("OPENAI_API_KEY"), os.getenv("OPENAI_API_MODEL")
+        base_url, api_base = os.getenv("OPENAI_API_BASE_URL"), os.getenv("OPENAI_API_BASE")
+        # move the old config file to a temporary file
+        if os.path.exists(CONFIG_FILE):
+            # move the old config file to a temporary file
+            os.makedirs("/tmp", exist_ok=True)
+            tmp_file = os.path.join("/tmp", str(uuid.uuid4())[:8] + ".askchat.env")
+            shutil.move(CONFIG_FILE, tmp_file)
+            print(f"Moved old config file to {tmp_file}")
+        # save the config file
+        with open(CONFIG_FILE, "w") as f:
+            # description for the config file
+            f.write("#!/bin/bash\n" +\
+                    "# Description: Env file for askchat.\n" +\
+                    "# Current version: " + VERSION + "\n\n" +\
+                    "# The base url of the API (without suffix /v1)\n" +\
+                    "OPENAI_API_BASE_URL=\n\n" +\
+                    "# The base url of the API (with suffix /v1)\n" +\
+                    "OPENAI_API_BASE=\n\n" +\
+                    "# Your API key\n" +\
+                    "OPENAI_API_KEY=\n\n" +\
+                    "# The model name\n" +\
+                    "# You can use `askchat --all-valid-models` to see the valid models\n" +\
+                    "OPENAI_API_MODEL=\n\n")
+        # write the environment table
+        if api_key: set_key(CONFIG_FILE, "OPENAI_API_KEY", api_key)
+        if base_url: set_key(CONFIG_FILE, "OPENAI_API_BASE_URL", base_url)
+        if api_base: set_key(CONFIG_FILE, "OPENAI_API_BASE", api_base)
+        if model: set_key(CONFIG_FILE, "OPENAI_API_MODEL", model)
+        print("Created config file at", CONFIG_FILE)
+        return
 
     # set values
-    os.makedirs(CONFIG_PATH, exist_ok=True)
-    ## read para from config file
+    ## 1. read from config file
     if os.path.exists(CONFIG_FILE):
         load_dotenv(CONFIG_FILE, override=True)
-    ## set para from command line
+    ## 2. read from command line
     if args.api_key:
         os.environ['OPENAI_API_KEY'] = args.api_key
     if args.base_url:
         os.environ['OPENAI_API_BASE_URL'] = args.base_url
     if args.model:
         os.environ['OPENAI_API_MODEL'] = args.model
+    ## 3. read from environment variables
     load_envs()
     
     # show debug log
@@ -90,39 +125,6 @@ def main():
         pprint(Chat().get_valid_models(gpt_only=False))
         return
     
-    # generate config file
-    if args.generate_config:
-        api_key = os.environ.get("OPENAI_API_KEY")
-        base_url = os.environ.get("OPENAI_API_BASE_URL")
-        model = os.environ.get("OPENAI_API_MODEL")
-        # move the old config file to a temporary file
-        if os.path.exists(CONFIG_FILE):
-            # create a temporary file
-            os.makedirs("/tmp", exist_ok=True)
-            tmp_file = os.path.join("/tmp", str(uuid.uuid4())[:8] + ".askchat.env")
-            # move the old config file to a temporary file
-            shutil.move(CONFIG_FILE, tmp_file)
-            print(f"Moved old config file to {tmp_file}")
-        # save the config file
-        with open(CONFIG_FILE, "w") as f:
-            # description for the config file
-            f.write("#!/bin/bash\n" +\
-                    "# Description: Env file for askchat.\n" +\
-                    "# Current version: " + VERSION + "\n\n" +\
-                    "# The base url of the API (without suffix /v1)\n" +\
-                    "OPENAI_API_BASE_URL=\n\n" +\
-                    "# Your API key\n" +\
-                    "OPENAI_API_KEY=\n\n" +\
-                    "# The model name\n" +\
-                    "# You can use `askchat --all-valid-models` to see the valid models\n" +\
-                    "OPENAI_API_MODEL=\n\n")
-        # write the environment table
-        if api_key: set_key(CONFIG_FILE, "OPENAI_API_KEY", api_key)
-        if base_url: set_key(CONFIG_FILE, "OPENAI_API_BASE_URL", base_url)
-        if model: set_key(CONFIG_FILE, "OPENAI_API_MODEL", model)
-        print("Created config file at", CONFIG_FILE)
-        return
-
     # deal with chat history
     call_history = False
     ## load chat
@@ -158,6 +160,7 @@ def main():
         names = args.print
         assert len(names) <= 1, "Only one file can be specified"
         new_file = os.path.join(CONFIG_PATH, names[0]) + ".json" if len(names) else LAST_CHAT_FILE
+        assert os.path.exists(new_file), "No conversation file found, check the chat list with `--list` option"
         chat = Chat.load(new_file)
         chat.print_log()
         call_history = True
