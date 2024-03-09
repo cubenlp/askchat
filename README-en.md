@@ -1,73 +1,107 @@
 # askchat
+
 [![PyPI version](https://img.shields.io/pypi/v/askchat.svg)](https://pypi.python.org/pypi/askchat)
-[![Tests](https://github.com/rexwzh/askchat/actions/workflows/test.yml/badge.svg)](https://github.com/rexwzh/askchat/actions/workflows/test.yml/)
-[![Documentation Status](https://img.shields.io/badge/docs-github_pages-blue.svg)](https://rexwzh.github.io/askchat/)
-[![Coverage](https://codecov.io/gh/rexwzh/askchat/branch/main/graph/badge.svg)](https://codecov.io/gh/rexwzh/askchat)
+[![Tests](https://github.com/cubenlp/askchat/actions/workflows/test.yml/badge.svg)](https://github.com/cubenlp/askchat/actions/workflows/test.yml/)
+[![Documentation Status](https://img.shields.io/badge/docs-github_pages-blue.svg)](https://cubenlp.github.io/askchat/)
+[![Coverage](https://codecov.io/gh/cubenlp/askchat/branch/main/graph/badge.svg)](https://codecov.io/gh/cubenlp/askchat)
 
-[English](README-en.md) | [简体中文](README.md)
+[English](README-en.md) | [Simplified Chinese](README.md)
 
-Interact with ChatGPT in terminal via chattool.
+Invoke ChatGPT from the command line.
 
 ## Installation
 
 ```bash
-pip install askchat
+pip install askchat --upgrade
 ```
 
-## Usage
+## How to Use
 
-A simple way:
+Run simply with the default environment variables:
+
 ```bash
 ask hello
 ```
 
-Ask with more options via `askchat`:
+Specify other options via `askchat`:
+
 ```bash
-# ask with a specific model
-askchat hello -m "baichuan2" --base_url "localhost:8000"
+# Ask using a specific model
+askchat hello -m "baichuan2" --base-url "localhost:8000"
 ```
 
-Generate config file for default options:
+Generate a default configuration file via environment variables, edit the configuration in `~/.askchat/.env`:
+
 ```bash
 askchat --generate-config
 ```
 
-You might edit the config at `~/.askchat/.env`.
+## Chat Options
 
-Other options:
 ```bash
-# current version
-askchat -v 
-# print the debug log
+# Show the current version
+askchat -v
+
+# Print debug logs
 askchat --debug
-# get valid models that contains "gpt"
+
+# Get valid models that include "gpt"
 askchat --valid-models
-# get all valid models
+
+# Get all valid models
 askchat --all-valid-models
 ```
 
-## Advance usage
 
-You can manage your chats with `askchat`:
+## Managing Conversation History
+
+Manage conversations using `askchat`:
 
 ```bash
 askchat hello
-# continue the last chat: -c
-askchat -c tell me a joke please
-# regenerate the last conversation: -r
+# Continue the last conversation: -c
+askchat -c please tell me a joke
+# Regenerate the last conversation: -r
 askchat -r
-# regenerate the last conversation with new message: -r
+# Modify and regenerate the last conversation: -r
 askchat -r give me some jokes please
-# save the chat: -s/--save
+# Save the conversation: -s/--save
 askchat -s joke
-# load the chat: -l/--load
+# Load a conversation: -l/--load
 askchat -l joke
-# delete the chat: -d/--delete
+# Delete a conversation: -d/--delete
 askchat -d joke
-# list all saved chats: --list
+# List all saved conversations: --list
 askchat --list
-# print the last chat: -p/--print
+# Print the last conversation: -p/--print
 askchat -p
-# print the given chat: -p/--print
+# Print a specific conversation: -p/--print
 askchat -p joke
+```
+
+## Managing Environment Configuration
+
+Manage different environment configurations with `chatenv`:
+
+```bash
+# Create a new environment
+chatenv create <name> [--api-key "<api_key>"] [--base-url "<base_url>"] [--api-base "<api_base>"] [--model "<model_name>"]
+
+# Activate a specified environment
+chatenv use <name>
+
+# Update environment configuration
+chatenv config [<name>] [--api-key "<new_api_key>"] [--base-url "<new_base_url>"] [--api-base "<new_api_base>"] [--model "<new_model_name>"]
+
+# List all environments
+chatenv list
+
+# Show variables of a specified or default environment
+chatenv show [<name>]
+
+# Save the current environment as a new environment file
+chatenv save <name>
+
+# Delete a specified or the default environment configuration
+chatenv delete [<name>] [--default]
 ```

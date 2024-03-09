@@ -10,7 +10,7 @@ ENV_PATH = Path.home() / '.askchat' / 'envs'
 
 @click.group()
 def cli():
-    """askenvs CLI for managing askchat environments."""
+    """chatenv CLI for managing askchat environments."""
     if not ENV_PATH.exists():
         ENV_PATH.mkdir(parents=True)
 
@@ -36,7 +36,7 @@ def create(name, api_key, base_url, api_base, model):
     config_path = ENV_PATH / f'{name}.env'
     if config_path.exists():
         click.echo(f"Environment '{name}' already exists." +\
-                   "Use 'askenvs delete' to delete it first.")
+                   "Use 'chatenv delete' to delete it first.")
     else:
         write_config(config_path, api_key, model, base_url, api_base)
         click.echo(f"Environment '{name}' created.")
@@ -65,14 +65,18 @@ def delete(name, default):
             click.echo(f"Environment '{name}' not found.")
 
 @cli.command()
-def current():
-    """Print current environment variables."""
-    if MAIN_ENV_PATH.exists():
-        with MAIN_ENV_PATH.open() as f:
+@click.argument('name', required=False)
+def show(name):
+    """Print environment variables. Show default if no name is provided."""
+    config_path = ENV_PATH / f'{name}.env' if name else MAIN_ENV_PATH
+    if config_path.exists():
+        with config_path.open() as f:
             click.echo(f.read())
     else:
-        click.echo("No active environment." +\
-                   "You can use `askchat --generate-config` to create one.")
+        if name:
+            click.echo(f"Environment '{name}' not found.")
+        else:
+            click.echo("No active environment. You can use `chatenv create` to create one.")
 
 @cli.command()
 @click.argument('name')
@@ -88,7 +92,7 @@ def save(name):
 
 @cli.command()
 @click.argument('name')
-def activate(name):
+def use(name):
     """Activate an environment by replacing the .env file."""
     config_path = ENV_PATH / f'{name}.env'
     if config_path.exists():
@@ -103,26 +107,25 @@ def activate(name):
 @click.option('-b', '--base-url', help='Base URL of the API (without suffix `/v1`)')
 @click.option('--api-base', help='Base URL of the API (with suffix `/v1`)')
 @click.option('-m', '--model', help='Model name')
-def env(api_key, base_url, api_base, model):
+@click.argument('name', required=False)
+def config(name, api_key, base_url, api_base, model):
     """Update default .env values."""
-    updated = False
-    MAIN_ENV_PATH.touch(exist_ok=True)
-    if api_key:
-        set_key(MAIN_ENV_PATH, "API_KEY", api_key)
-        updated = True
-    if base_url:
-        set_key(MAIN_ENV_PATH, "BASE_URL", base_url)
-        updated = True
-    if api_base:
-        set_key(MAIN_ENV_PATH, "API_BASE", api_base)
-        updated = True
-    if model:
-        set_key(MAIN_ENV_PATH, "MODEL", model)
-        updated = True
-    if updated:
-        click.echo("Default environment updated.")
-    else:
+    if not any([api_key, base_url, api_base, model]):
         click.echo("No updates made. Provide at least one option to update.")
+        return
+    config_path = ENV_PATH / f'{name}.env' if name else MAIN_ENV_PATH
+    if not config_path.exists():
+        click.echo(f"Environment '{config_path}' not found.")
+        return
+    if api_key:
+        set_key(config_path, "OPENAI_API_KEY", api_key)
+    if base_url:
+        set_key(config_path, "OPENAI_API_BASE_URL", base_url)
+    if api_base:
+        set_key(config_path, "OPENAI_API_BASE", api_base)
+    if model:
+        set_key(config_path, "OPENAI_API_MODEL", model)
+    click.echo(f"Environment {config_path} updated.")
 
 if __name__ == '__main__':
     cli()

@@ -4,9 +4,7 @@
 
 import pytest
 
-
-from askchat import askchat
-
+import askchat
 
 @pytest.fixture
 def response():

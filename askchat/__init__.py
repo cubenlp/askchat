@@ -2,7 +2,7 @@
 
 __author__ = """Rex Wang"""
 __email__ = '1073853456@qq.com'
-__version__ = '0.3.4'
+__version__ = '0.4.0'
 
 import asyncio
 
@@ -30,4 +30,4 @@ def write_config(config_file, api_key, model, base_url, api_base):
 
         write_var(f, "OPENAI_API_KEY", api_key, "Your API key")
         write_var(f, "OPENAI_API_MODEL", model, "The model name\n" +\
-                    "# You can use `askchat --all-valid-models` to see the valid models")
+                    "# You can use `askchat --all-valid-models` to see supported models")
