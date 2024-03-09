@@ -1,11 +1,11 @@
 """Main module."""
 
-import click, asyncio, askchat
+import click, asyncio, askchat, chattool
 from pathlib import Path
 from pprint import pprint
 from dotenv import load_dotenv, set_key
 import asyncio, os, uuid, shutil, json
-from chattool import Chat, debug_log, load_envs
+from chattool import Chat, debug_log
 from pathlib import Path
 from .ask import show_resp
 
@@ -25,17 +25,36 @@ def setup():
     #     with open(LAST_CHAT_FILE, 'w') as lcf:
     #         lcf.write('{"index": 0, "chat_log": []}')
 
-def print_callback(ctx, param, value):
-    print("无参数，回调")
-    if value is None:
-        return "_last_chat"  # default value
-    return value
+def _generate_config():
+    """Generate a configuration file by environment table."""
+    api_key, model = os.getenv("OPENAI_API_KEY"), os.getenv("OPENAI_API_MODEL")
+    base_url, api_base = os.getenv("OPENAI_API_BASE_URL"), os.getenv("OPENAI_API_BASE")
 
-def generate_config():
-    pass
-
-def load_config():
-    pass
+    def write_var(f, var, value, desc):
+        value = value if value else ""
+        f.write(f"# {desc}\n")
+        f.write(f'{var}="{value}"\n\n')
+    
+    # move the old config file to a temporary file
+    if os.path.exists(CONFIG_FILE):
+        # move the old config file to a temporary file
+        os.makedirs("/tmp", exist_ok=True)
+        tmp_file = os.path.join("/tmp", str(uuid.uuid4())[:8] + ".askchat.env")
+        shutil.move(CONFIG_FILE, tmp_file)
+        print(f"Moved old config file to {tmp_file}")
+        # save the config file
+        with open(CONFIG_FILE, "w") as f:
+            # description for the config file
+            f.write("#Description: Env file for askchat.\n" +\
+                    "#Current version: " + VERSION + "\n\n")
+            # write the environment table
+            write_var(f, "OPENAI_API_BASE_URL", base_url, "The base url of the API (without suffix /v1)")
+            write_var(f, "OPENAI_API_BASE", api_base, "The base url of the API (with suffix /v1)")
+            write_var(f, "OPENAI_API_KEY", api_key, "Your API key")
+            write_var(f, "OPENAI_API_MODEL", model, "The model name\n" +\
+                        "# You can use `askchat --all-valid-models` to see the valid models")
+        print("Created config file at", CONFIG_FILE)
+        return
 
 @click.group()
 def cli():
@@ -68,12 +87,11 @@ def askchat( message, model, base_url, api_base, api_key
     """Interact with ChatGPT in terminal via chattool"""
     setup()
     message_text = ' '.join(message).strip()
-    # generate config file
-    if generate_config:
-        return generate_config()
+    
     # set values for the environment variables
     ## 1. read from config file `~/.askchat/.env`
-    # load_config()
+    if os.path.exists(CONFIG_FILE):
+        load_dotenv(CONFIG_FILE, override=True)
     ## 2. read from command line
     if api_key:
         os.environ['OPENAI_API_KEY'] = api_key
@@ -83,8 +101,11 @@ def askchat( message, model, base_url, api_base, api_key
         os.environ['OPENAI_API_BASE'] = api_base
     if model:
         os.environ['OPENAI_API_MODEL'] = model
-    # update environment variables of chattool
-    load_envs()
+    # generate config file
+    if generate_config:
+        return _generate_config()
+    # update environment variables for chattool
+    chattool.load_envs()
     # show debug log
     if debug:
         return debug_log()
