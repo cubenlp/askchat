@@ -7,7 +7,8 @@ from dotenv import load_dotenv, set_key
 import asyncio, os, uuid, shutil, json
 from chattool import Chat, debug_log
 from pathlib import Path
-from .ask import show_resp
+import askchat
+from . import show_resp, write_config
 
 # Version and Config Path
 VERSION = askchat.__version__
@@ -29,11 +30,6 @@ def _generate_config():
     """Generate a configuration file by environment table."""
     api_key, model = os.getenv("OPENAI_API_KEY"), os.getenv("OPENAI_API_MODEL")
     base_url, api_base = os.getenv("OPENAI_API_BASE_URL"), os.getenv("OPENAI_API_BASE")
-
-    def write_var(f, var, value, desc):
-        value = value if value else ""
-        f.write(f"# {desc}\n")
-        f.write(f'{var}="{value}"\n\n')
     
     # move the old config file to a temporary file
     if os.path.exists(CONFIG_FILE):
@@ -43,23 +39,14 @@ def _generate_config():
         shutil.move(CONFIG_FILE, tmp_file)
         print(f"Moved old config file to {tmp_file}")
         # save the config file
-        with open(CONFIG_FILE, "w") as f:
-            # description for the config file
-            f.write("#Description: Env file for askchat.\n" +\
-                    "#Current version: " + VERSION + "\n\n")
-            # write the environment table
-            write_var(f, "OPENAI_API_BASE_URL", base_url, "The base url of the API (without suffix /v1)")
-            write_var(f, "OPENAI_API_BASE", api_base, "The base url of the API (with suffix /v1)")
-            write_var(f, "OPENAI_API_KEY", api_key, "Your API key")
-            write_var(f, "OPENAI_API_MODEL", model, "The model name\n" +\
-                        "# You can use `askchat --all-valid-models` to see the valid models")
+        write_config(CONFIG_FILE, api_key, model, base_url, api_base)
         print("Created config file at", CONFIG_FILE)
         return
 
 @click.group()
 def cli():
     """A CLI for interacting with ChatGPT with advanced options."""
-    pass
+    setup()
 
 @cli.command()
 @click.argument('message', nargs=-1)
@@ -81,11 +68,10 @@ def cli():
 @click.option('--valid-models', is_flag=True, help='Print valid models that contain "gpt" in their names')
 @click.option('--all-valid-models', is_flag=True, help='Print all valid models')
 @click.option('-v', '--version', is_flag=True, help='Print the version')
-def askchat( message, model, base_url, api_base, api_key
+def main( message, model, base_url, api_base, api_key
            , c, regenerate, save, load, print, delete, list
            , generate_config, debug, valid_models, all_valid_models, version):
     """Interact with ChatGPT in terminal via chattool"""
-    setup()
     message_text = ' '.join(message).strip()
     
     # set values for the environment variables
