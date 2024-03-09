@@ -5,7 +5,6 @@ __email__ = '1073853456@qq.com'
 __version__ = '0.3.4'
 
 import asyncio
-import ask, askchat
 
 async def show_resp(chat):
     msg = ''
@@ -19,11 +18,11 @@ def write_config(config_file, api_key, model, base_url, api_base):
     """Write the environment variables to a config file."""
     def write_var(f, var, value, desc):
         value = value if value else ""
-        f.write(f"# {desc}\n")
-        f.write(f'{var}="{value}"\n\n')
+        f.write(f"\n\n# {desc}\n")
+        f.write(f'{var}="{value}"')
     with open(config_file, "w") as f:
         f.write("#Description: Env file for askchat.\n" +\
-                "#Current version: " + askchat.__version__ + "\n\n")
+                "#Current version: " + __version__)
         # write the environment table
         write_var(f, "OPENAI_API_BASE", api_base, "The base url of the API (with suffix /v1)" +\
                     "\n# This will override OPENAI_API_BASE_URL if both are set.")

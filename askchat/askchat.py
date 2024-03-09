@@ -39,9 +39,9 @@ def _generate_config():
         shutil.move(CONFIG_FILE, tmp_file)
         print(f"Moved old config file to {tmp_file}")
         # save the config file
-        write_config(CONFIG_FILE, api_key, model, base_url, api_base)
-        print("Created config file at", CONFIG_FILE)
-        return
+    write_config(CONFIG_FILE, api_key, model, base_url, api_base)
+    print("Created config file at", CONFIG_FILE)
+    return
 
 @click.group()
 def cli():
