@@ -15,6 +15,7 @@ VERSION = askchat.__version__
 CONFIG_PATH = Path.home() / ".askchat"
 CONFIG_FILE = CONFIG_PATH / ".env"
 LAST_CHAT_FILE = CONFIG_PATH / "_last_chat.json"
+ENV_PATH = Path.home() / '.askchat' / 'envs'
 
 def setup():
     """Application setup: Ensure that necessary folders and files exist."""
@@ -22,26 +23,78 @@ def setup():
     if not os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'w') as cf:
             cf.write("# Initial configuration\n")
+    load_dotenv(CONFIG_FILE, override=True)
     # if not os.path.exists(LAST_CHAT_FILE):
     #     with open(LAST_CHAT_FILE, 'w') as lcf:
     #         lcf.write('{"index": 0, "chat_log": []}')
 
-def _generate_config():
+# callback functions
+def generate_config_callback(ctx, param, value):
     """Generate a configuration file by environment table."""
+    if not value:
+        return
     api_key, model = os.getenv("OPENAI_API_KEY"), os.getenv("OPENAI_API_MODEL")
     base_url, api_base = os.getenv("OPENAI_API_BASE_URL"), os.getenv("OPENAI_API_BASE")
-    
-    # move the old config file to a temporary file
-    if os.path.exists(CONFIG_FILE):
-        # move the old config file to a temporary file
-        os.makedirs("/tmp", exist_ok=True)
-        tmp_file = os.path.join("/tmp", str(uuid.uuid4())[:8] + ".askchat.env")
-        shutil.move(CONFIG_FILE, tmp_file)
-        print(f"Moved old config file to {tmp_file}")
-        # save the config file
+    # save the config file
     write_config(CONFIG_FILE, api_key, model, base_url, api_base)
     print("Created config file at", CONFIG_FILE)
-    return
+    ctx.exit()
+
+def debug_log_callback(ctx, param, value):
+    if not value:
+        return
+    debug_log()
+    ctx.exit()
+
+def valid_models_callback(ctx, param, value):
+    if not value:
+        return
+    click.echo('Valid models that contain "gpt" in their names:')
+    click.echo(pprint(Chat().get_valid_models()))
+    ctx.exit()
+
+def all_valid_models_callback(ctx, param, value):
+    if not value:
+        return
+    click.echo('All valid models:')
+    click.echo(pprint(Chat().get_valid_models(gpt_only=False)))
+    ctx.exit()
+
+def version_callback(ctx, param, value):
+    if not value:
+        return
+    click.echo(f"askchat version: {VERSION}")
+    ctx.exit()
+
+# callback functions for handling chat history
+def save_chat_callback(ctx, param, value):
+    if not value:
+        return
+    try:
+        shutil.copyfile(LAST_CHAT_FILE, CONFIG_PATH / f"{value}.json")
+        click.echo(f"Saved conversation to {CONFIG_PATH}/{value}.json")
+    except FileNotFoundError:
+        click.echo("No last conversation to save.")
+    ctx.exit()
+
+def delete_chat_callback(ctx, param, value):
+    if not value:
+        return
+    try:
+        os.remove(CONFIG_PATH / f"{value}.json")
+        click.echo(f"Deleted conversation at {CONFIG_PATH}/{value}.json")
+    except FileNotFoundError:
+        click.echo(f"The specified conversation {CONFIG_PATH}/{value}.json does not exist.")
+    ctx.exit()
+
+def list_chats_callback(ctx, param, value):
+    if not value:
+        return
+    click.echo("All conversation files:")
+    for file in CONFIG_PATH.glob("*.json"):
+        if not file.name.startswith("_"):
+            click.echo(f" - {file.stem}")
+    ctx.exit()
 
 @click.group()
 def cli():
@@ -54,31 +107,34 @@ def cli():
 @click.option('-b', '--base-url', default=None, help='Base URL of the API (without suffix `/v1`)')
 @click.option('--api-base', default=None, help='Base URL of the API (with suffix `/v1`)')
 @click.option('-a', '--api-key', default=None, help='OpenAI API key')
+@click.option('-u', '--use-env', default=None, help='Use environment variables from the ENV_PATH')
 # Chat with history
 @click.option('-c', is_flag=True, help='Continue the last conversation')
 @click.option('-r', '--regenerate', is_flag=True, help='Regenerate the last conversation')
-@click.option('-s', '--save', default=None, help='Save the conversation to a file')
 @click.option('-l', '--load', default=None, help='Load the conversation from a file')
+# Handling chat history
 @click.option('-p', '--print', is_flag=True, help='Print the last conversation or a specific conversation')
-@click.option('-d', '--delete', default=None, help='Delete the conversation from a file')
-@click.option('--list', is_flag=True, help='List all the conversation files')
+@click.option('-s', '--save', callback=save_chat_callback, expose_value=False, help='Save the conversation to a file')
+@click.option('-d', '--delete', callback=delete_chat_callback, expose_value=False, help='Delete the conversation from a file')
+@click.option('--list', is_flag=True, callback=list_chats_callback, expose_value=False, help='List all the conversation files')
 # Other options
-@click.option('--generate-config', is_flag=True, help='Generate a configuration file by environment table')
-@click.option('--debug', is_flag=True, help='Print debug log')
-@click.option('--valid-models', is_flag=True, help='Print valid models that contain "gpt" in their names')
-@click.option('--all-valid-models', is_flag=True, help='Print all valid models')
-@click.option('-v', '--version', is_flag=True, help='Print the version')
-def main( message, model, base_url, api_base, api_key
-           , c, regenerate, save, load, print, delete, list
-           , generate_config, debug, valid_models, all_valid_models, version):
+@click.option('--generate-config', is_flag=True, callback=generate_config_callback, expose_value=False, help='Generate a configuration file by environment table')
+@click.option('--debug', is_flag=True, callback=debug_log_callback, expose_value=False, help='Print debug log')
+@click.option('--valid-models', is_flag=True, callback=valid_models_callback, expose_value=False, help='Print valid models that contain "gpt" in their names')
+@click.option('--all-valid-models', is_flag=True, callback=all_valid_models_callback, expose_value=False, help='Print all valid models')
+@click.option('-v', '--version', is_flag=True, callback=version_callback, expose_value=False, help='Print the version')
+def main( message, model, base_url, api_base, api_key, use_env
+        , c, regenerate, load, print):
     """Interact with ChatGPT in terminal via chattool"""
-    message_text = ' '.join(message).strip()
-    
+    # read environment variables from the ENV_PATH
+    if use_env:
+        env_file = ENV_PATH / f"{use_env}.env"
+        if env_file.exists():
+            load_dotenv(env_file, override=True)
+        else:
+            click.echo(f"Environment file {env_file} does not exist.")
+            return
     # set values for the environment variables
-    ## 1. read from config file `~/.askchat/.env`
-    if os.path.exists(CONFIG_FILE):
-        load_dotenv(CONFIG_FILE, override=True)
-    ## 2. read from command line
     if api_key:
         os.environ['OPENAI_API_KEY'] = api_key
     if base_url:
@@ -87,52 +143,9 @@ def main( message, model, base_url, api_base, api_key
         os.environ['OPENAI_API_BASE'] = api_base
     if model:
         os.environ['OPENAI_API_MODEL'] = model
-    # generate config file
-    if generate_config:
-        return _generate_config()
-    # update environment variables for chattool
-    chattool.load_envs()
-    # show debug log
-    if debug:
-        return debug_log()
-    # show valid models
-    if valid_models:
-        click.echo('Valid models that contain "gpt" in their names:')
-        click.echo(pprint(Chat().get_valid_models()))
-        return
-    if all_valid_models:
-        click.echo('All valid models:')
-        click.echo(pprint(Chat().get_valid_models(gpt_only=False)))
-        return
-    # Handle chat history operations
-    if load:
-        try:
-            shutil.copyfile(CONFIG_PATH / f"{load}.json", LAST_CHAT_FILE)
-            click.echo(f"Loaded conversation from {CONFIG_PATH}/{load}.json")
-        except FileNotFoundError:
-            click.echo(f"The specified conversation {load} does not exist." +\
-                       "Please check the chat list with `--list` option.")
-        return
-    if save:
-        try:
-            shutil.copyfile(LAST_CHAT_FILE, CONFIG_PATH / f"{save}.json")
-            click.echo(f"Saved conversation to {CONFIG_PATH}/{save}.json")
-        except FileNotFoundError:
-            click.echo("No last conversation to save.")
-        return
-    if delete:
-        try:
-            os.remove(CONFIG_PATH / f"{delete}.json")
-            click.echo(f"Deleted conversation at {CONFIG_PATH}/{delete}.json")
-        except FileNotFoundError:
-            click.echo(f"The specified conversation {CONFIG_PATH}/{delete}.json does not exist.")
-        return
-    if list:
-        click.echo("All conversation files:")
-        for file in CONFIG_PATH.glob("*.json"):
-            if not file.name.startswith("_"):
-                click.echo(f" - {file.stem}")
-        return
+    chattool.load_envs() # update the environment variables in chattool
+    # print chat messages
+    message_text = ' '.join(message).strip()
     if print:
         fname = message_text if message_text else '_last_chat'
         fname = f"{CONFIG_PATH}/{fname}.json"
@@ -141,29 +154,45 @@ def main( message, model, base_url, api_base, api_key
         except FileNotFoundError:
             click.echo(f"The specified conversation {fname} does not exist.")
         return
-    # Handle version option
-    if version:
-        click.echo(f"askchat version: {VERSION}")
-        return
-    # Main chat
+    # handling chat history | Four cases: regenerate, load, continue, default
     chat = Chat()
-    if c or regenerate: # Load last chat if -c or -r is used
+    if regenerate:
         try:
             chat = Chat.load(LAST_CHAT_FILE)
         except FileNotFoundError:
             click.echo("No last conversation found. Starting a new conversation.")
             return
-    if regenerate:
         if len(chat) < 2:
             click.echo("You should have at least two messages in the conversation")
             return
         chat.pop()
+    elif load: # load and continue the conversation
+        try:
+            shutil.copyfile(CONFIG_PATH / f"{load}.json", LAST_CHAT_FILE)
+            click.echo(f"Loaded conversation from {CONFIG_PATH}/{load}.json")
+        except FileNotFoundError:
+            click.echo(f"The specified conversation {load} does not exist." +\
+                       "Please check the chat list with `--list` option.")
+        if not message_text: # if no message is provided, just quit
+            return
+        chat = Chat.load(LAST_CHAT_FILE)
+        chat.user(message_text)
+    elif c: # continue the last conversation
+        if not message_text:
+            click.echo("Please specify message!")
+            return
+        try:
+            chat = Chat.load(LAST_CHAT_FILE)
+        except FileNotFoundError:
+            click.echo("No last conversation found. Starting a new conversation.")
+            return
+        chat.user(message_text)
     else:
         if not message_text:
             click.echo("Please specify message!")
             return
         chat.user(message_text)
-    # Simulate chat response
+    # Add chat response
     chat.assistant(asyncio.run(show_resp(chat)))
     chat.save(LAST_CHAT_FILE, mode='w')
 
