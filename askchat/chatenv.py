@@ -31,7 +31,7 @@ def list():
 @click.option('-b', '--base-url', default=None, help='Base URL of the API (without suffix `/v1`)')
 @click.option('--api-base', default=None, help='Base URL of the API (with suffix `/v1`)')
 @click.option('-m', '--model', default=None, help='Model name')
-def create(name, api_key, base_url, api_base, model):
+def new(name, api_key, base_url, api_base, model):
     """Create a new environment configuration."""
     config_path = ENV_PATH / f'{name}.env'
     if config_path.exists():
@@ -76,7 +76,7 @@ def show(name):
         if name:
             click.echo(f"Environment '{name}' not found.")
         else:
-            click.echo("No active environment. You can use `chatenv create` to create one.")
+            click.echo("No active environment. You can use `chatenv new` to new one.")
 
 @cli.command()
 @click.argument('name')
