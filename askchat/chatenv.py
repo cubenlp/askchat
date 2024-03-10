@@ -1,6 +1,6 @@
 import click
 from pathlib import Path
-from . import write_config
+from askchat import write_config
 from dotenv import set_key
 
 # Main environment file
@@ -35,11 +35,12 @@ def new(name, api_key, base_url, api_base, model):
     """Create a new environment configuration."""
     config_path = ENV_PATH / f'{name}.env'
     if config_path.exists():
-        click.echo(f"Environment '{name}' already exists." +\
-                   "Use 'chatenv delete' to delete it first.")
+        click.echo(f"Warning: Overwriting existing environment '{name}'.")
+        # use click.confirm to ask for user confirmation
+        click.confirm("Do you want to continue?", abort=True)
     else:
-        write_config(config_path, api_key, model, base_url, api_base)
         click.echo(f"Environment '{name}' created.")
+    write_config(config_path, api_key, model, base_url, api_base)
 
 @cli.command()
 @click.argument('name', required=False)  # Make 'name' argument optional

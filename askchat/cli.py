@@ -3,12 +3,11 @@
 import click, asyncio, askchat, chattool
 from pathlib import Path
 from pprint import pprint
-from dotenv import load_dotenv, set_key
-import asyncio, os, uuid, shutil, json
+from dotenv import load_dotenv
+import asyncio, os, shutil
 from chattool import Chat, debug_log
 from pathlib import Path
-import askchat
-from . import show_resp, write_config
+from askchat import show_resp, write_config
 
 # Version and Config Path
 VERSION = askchat.__version__
@@ -24,6 +23,7 @@ def setup():
         with open(CONFIG_FILE, 'w') as cf:
             cf.write("# Initial configuration\n")
     load_dotenv(CONFIG_FILE, override=True)
+    print("setup loaded")
     # if not os.path.exists(LAST_CHAT_FILE):
     #     with open(LAST_CHAT_FILE, 'w') as lcf:
     #         lcf.write('{"index": 0, "chat_log": []}')
@@ -36,6 +36,8 @@ def generate_config_callback(ctx, param, value):
     api_key, model = os.getenv("OPENAI_API_KEY"), os.getenv("OPENAI_API_MODEL")
     base_url, api_base = os.getenv("OPENAI_API_BASE_URL"), os.getenv("OPENAI_API_BASE")
     # save the config file
+    if os.path.exists(CONFIG_FILE):
+        click.confirm(f"Overwrite the existing configuration file {CONFIG_FILE}?", abort=True)
     write_config(CONFIG_FILE, api_key, model, base_url, api_base)
     print("Created config file at", CONFIG_FILE)
     ctx.exit()
@@ -99,7 +101,7 @@ def list_chats_callback(ctx, param, value):
 @click.group()
 def cli():
     """A CLI for interacting with ChatGPT with advanced options."""
-    setup()
+    pass
 
 @cli.command()
 @click.argument('message', nargs=-1)
@@ -126,6 +128,7 @@ def cli():
 def main( message, model, base_url, api_base, api_key, use_env
         , c, regenerate, load, print):
     """Interact with ChatGPT in terminal via chattool"""
+    setup()
     # read environment variables from the ENV_PATH
     if use_env:
         env_file = ENV_PATH / f"{use_env}.env"

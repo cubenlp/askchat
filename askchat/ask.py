@@ -1,7 +1,7 @@
 import click
 import asyncio
 from chattool import Chat
-from . import show_resp
+from askchat import show_resp
 
 @click.command()
 @click.argument('message', nargs=-1, required=True)

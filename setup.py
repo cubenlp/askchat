@@ -4,7 +4,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '0.4.0'
+VERSION = '1.0.0'
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
@@ -38,7 +38,7 @@ setup(
     packages=find_packages(include=['askchat', 'askchat.*']),
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/rexwzh/askchat',
+    url='https://github.com/cubenlp/askchat',
     version=VERSION,
     zip_safe=False,
 )
