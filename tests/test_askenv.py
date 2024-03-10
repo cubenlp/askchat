@@ -1,6 +1,6 @@
 import pytest
 from click.testing import CliRunner
-from askchat.chatenv import cli
+from askchat.askenv import cli
 from pathlib import Path
 
 ENV_PATH = Path.home() / '.askchat' / 'envs'

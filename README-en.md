@@ -108,7 +108,7 @@ Default parameters for `askchat`, used for direct interaction with ChatGPT or co
 | `--base-url`    | `-b https://api.example.com`     | Set the Base URL (excluding `/v1`)           |
 | `--api-base`    | `--api-base https://api.example.com/v1` | Set the Base URL           |
 | `--api-key`     | `-a sk-xxxxxxx`                  | Provide the OpenAI API key                   |
-| `--use-env`     | `-u prod`                        | Load environment variables from the specified config file, see [ChatEnv](#chatenv) |
+| `--use-env`     | `-u prod`                        | Load environment variables from the specified config file, see [AskEnv](#askenv) |
 
 Note: Some model APIs, like ChatGPT, use `/v4` as the base path of the API, so the `--api-base` parameter would be needed.
 
@@ -126,49 +126,49 @@ Auxiliary features such as generating configuration files, printing debug logs, 
 
 Note: `--all-valid-models` prints all available models, including Embedding, dalle-3, tts, etc., use `--valid-models` to filter these out.
 
-## ChatEnv
+## AskEnv
 
-`chatenv` is used to manage different environment configurations, supporting operations such as create, activate, delete, etc. It facilitates switching between different environments, managing API keys, model names, and API base URLs.
+`askenv` is used to manage different environment configurations, supporting operations such as create, activate, delete, etc. It facilitates switching between different environments, managing API keys, model names, and API base URLs.
 
 1. Create a new environment configuration using the `new` command.
 
     ```bash
-    chatenv new <name> [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
+    askenv new <name> [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```
 
 2. Activate an environment, setting it as the current configuration.
 
     ```bash
-    chatenv use <name>
+    askenv use <name>
     ```
 
 3. Delete a specified environment configuration file.
 
     ```bash
-    chatenv delete <name>
-    chatenv delete --default
+    askenv delete <name>
+    askenv delete --default
     ```
 
 4. List all available environments.
 
     ```bash
-    chatenv list
+    askenv list
     ```
 
 5. Display the configuration information for a specified environment, or the default environment if no name is provided.
 
     ```bash
-    chatenv show [name]
+    askenv show [name]
     ```
 
 6. Save the currently active environment configuration to a specified name.
 
     ```bash
-    chatenv save <name>
+    askenv save <name>
     ```
 
 7. Update one or more settings for a specified or default environment configuration.
 
     ```bash
-    chatenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
+    askenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```

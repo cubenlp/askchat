@@ -23,10 +23,9 @@ def setup():
         with open(CONFIG_FILE, 'w') as cf:
             cf.write("# Initial configuration\n")
     load_dotenv(CONFIG_FILE, override=True)
-    print("setup loaded")
-    # if not os.path.exists(LAST_CHAT_FILE):
-    #     with open(LAST_CHAT_FILE, 'w') as lcf:
-    #         lcf.write('{"index": 0, "chat_log": []}')
+
+# load environment variables from the configuration file
+setup()
 
 # callback functions
 def generate_config_callback(ctx, param, value):
@@ -45,6 +44,7 @@ def generate_config_callback(ctx, param, value):
 def debug_log_callback(ctx, param, value):
     if not value:
         return
+    
     debug_log()
     ctx.exit()
 
@@ -128,7 +128,6 @@ def cli():
 def main( message, model, base_url, api_base, api_key, use_env
         , c, regenerate, load, print):
     """Interact with ChatGPT in terminal via chattool"""
-    setup()
     # read environment variables from the ENV_PATH
     if use_env:
         env_file = ENV_PATH / f"{use_env}.env"

@@ -106,7 +106,7 @@ Options:
 | `--base-url` | `-b https://api.example.com` | 设置 Base URL (不包含 `/v1`) |
 | `--api-base`    | `--api-base https://api.example.com/v1` | 设置 Base URL  |
 | `--api-key` | `-a sk-xxxxxxx` | 提供 OpenAI API 密钥                |
-| `--use-env` | `-u prod` | 使用指定配置文件加载环境变量，详见 [ChatEnv](#chatenv) |
+| `--use-env` | `-u prod` | 使用指定配置文件加载环境变量，详见 [AskEnv](#askenv) |
 
 注：一些模型 API，比如智谱，使用 `/v4` 作为 API 的基础路径，这时得用 `--api-base` 参数。
 
@@ -124,49 +124,49 @@ Options:
 
 注：`--all-valid-models` 会打印所有可用模型，包括 Embedding, dalle-3, tts 等，使用 `--valid-models` 可以过滤掉这些。
 
-## ChatEnv
+## AskEnv
 
-`chatenv` 用于管理不同的环境配置，支持创建、激活、删除等操作，便于在不同的环境之间切换，管理 API 密钥、模型名称和 API 的基础 URL 等配置信息。
+`askenv` 用于管理不同的环境配置，支持创建、激活、删除等操作，便于在不同的环境之间切换，管理 API 密钥、模型名称和 API 的基础 URL 等配置信息。
 
 1. 创建一个新的环境配置，使用 `new` 命令。
 
     ```bash
-    chatenv new <name> [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
+    askenv new <name> [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```
 
 2. 激活某个环境，将其设置为当前使用的配置。
 
     ```bash
-    chatenv use <name>
+    askenv use <name>
     ```
 
 3. 删除指定的环境配置文件。
 
     ```bash
-    chatenv delete <name>
-    chatenv delete --default
+    askenv delete <name>
+    askenv delete --default
     ```
 
 4. 列出当前所有可用环境。
 
     ```bash
-    chatenv list
+    askenv list
     ```
 
 5. 显示指定环境的配置信息，如果没有指定环境名称，则显示默认环境的配置。
 
     ```bash
-    chatenv show [name]
+    askenv show [name]
     ```
 
 6. 将当前激活的环境配置保存为指定名称的配置文件。
 
     ```bash
-    chatenv save <name>
+    askenv save <name>
     ```
 
 7. 更新指定或默认环境配置的一项或多项设置。
 
     ```bash
-    chatenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
+    askenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```

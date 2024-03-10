@@ -10,7 +10,7 @@ ENV_PATH = Path.home() / '.askchat' / 'envs'
 
 @click.group()
 def cli():
-    """chatenv CLI for managing askchat environments."""
+    """askenv CLI for managing askchat environments."""
     if not ENV_PATH.exists():
         ENV_PATH.mkdir(parents=True)
 
@@ -77,7 +77,7 @@ def show(name):
         if name:
             click.echo(f"Environment '{name}' not found.")
         else:
-            click.echo("No active environment. You can use `chatenv new` to new one.")
+            click.echo("No active environment. You can use `askenv new` to new one.")
 
 @cli.command()
 @click.argument('name')
