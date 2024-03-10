@@ -23,6 +23,7 @@ def setup():
         with open(CONFIG_FILE, 'w') as cf:
             cf.write("# Initial configuration\n")
     load_dotenv(CONFIG_FILE, override=True)
+    chattool.load_envs()
 
 # load environment variables from the configuration file
 setup()
