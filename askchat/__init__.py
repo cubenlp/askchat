@@ -2,9 +2,16 @@
 
 __author__ = """Rex Wang"""
 __email__ = '1073853456@qq.com'
-__version__ = '1.0.2'
+__version__ = '1.1.0'
 
 import asyncio
+from pathlib import Path
+
+# Main environment file
+CONFIG_PATH = Path.home() / ".askchat"
+CONFIG_FILE = CONFIG_PATH / ".env"
+MAIN_ENV_PATH = Path.home() / '.askchat' / '.env'
+ENV_PATH = Path.home() / '.askchat' / 'envs'
 
 async def show_resp(chat):
     msg = ''

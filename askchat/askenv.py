@@ -1,14 +1,16 @@
 import click
-from pathlib import Path
-from askchat import write_config
+from askchat import write_config, ENV_PATH, MAIN_ENV_PATH
 from dotenv import set_key
 
-# Main environment file
-MAIN_ENV_PATH = Path.home() / '.askchat' / '.env'
-# Env directory
-ENV_PATH = Path.home() / '.askchat' / 'envs'
+help_message = """Manage askchat environments.
 
-@click.group()
+To enable autocompletion, add the following line to your shell configuration file (e.g., .bashrc, .zshrc):
+
+For zsh users: eval "$(_ASKENV_COMPLETE=zsh_source askenv)"
+
+For bash users: eval "$(_ASKENV_COMPLETE=bash_source askenv)\""""
+
+@click.group(help=help_message)
 def cli():
     """askenv CLI for managing askchat environments."""
     if not ENV_PATH.exists():

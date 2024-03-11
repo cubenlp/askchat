@@ -4,12 +4,12 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '1.0.2'
+VERSION = '1.1.0'
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-requirements = ['chattool>=3.1.1', "python-dotenv>=0.17.0", 'Click>=7.0']
+requirements = ['chattool>=3.1.1', "python-dotenv>=0.17.0", 'Click>=8.0']
 
 test_requirements = ['pytest>=3']
 

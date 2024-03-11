@@ -7,28 +7,35 @@ from dotenv import load_dotenv
 import asyncio, os, shutil
 from chattool import Chat, debug_log
 from pathlib import Path
-from askchat import show_resp, write_config
+from askchat import (
+      show_resp, write_config
+    , ENV_PATH, MAIN_ENV_PATH
+    , CONFIG_PATH, CONFIG_FILE
+)
 
 # Version and Config Path
 VERSION = askchat.__version__
-CONFIG_PATH = Path.home() / ".askchat"
-CONFIG_FILE = CONFIG_PATH / ".env"
 LAST_CHAT_FILE = CONFIG_PATH / "_last_chat.json"
-ENV_PATH = Path.home() / '.askchat' / 'envs'
+
+help_message = """Interact with ChatGPT in terminal via chattool.
+
+To enable autocompletion, add the following line to your shell configuration file (e.g., .bashrc, .zshrc):
+
+For zsh users: eval "$(_ASKCHAT_COMPLETE=zsh_source askchat)"
+
+For bash users: eval "$(_ASKCHAT_COMPLETE=bash_source askchat)\""""
 
 def setup():
     """Application setup: Ensure that necessary folders and files exist."""
     os.makedirs(CONFIG_PATH, exist_ok=True)
-    if not os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'w') as cf:
-            cf.write("# Initial configuration\n")
-    load_dotenv(CONFIG_FILE, override=True)
+    if os.path.exists(CONFIG_FILE):
+        load_dotenv(CONFIG_FILE, override=True)
     chattool.load_envs()
 
 # load environment variables from the configuration file
 setup()
 
-# callback functions
+# callback functions for general options
 def generate_config_callback(ctx, param, value):
     """Generate a configuration file by environment table."""
     if not value:
@@ -45,7 +52,6 @@ def generate_config_callback(ctx, param, value):
 def debug_log_callback(ctx, param, value):
     if not value:
         return
-    
     debug_log()
     ctx.exit()
 
@@ -80,6 +86,13 @@ def save_chat_callback(ctx, param, value):
         click.echo("No last conversation to save.")
     ctx.exit()
 
+class DeleteChatCompletionType(click.ParamType):
+    name = "deletechat"
+    def shell_complete(self, ctx, param, incomplete):
+        return [
+            click.shell_completion.CompletionItem(path.stem) for path in CONFIG_PATH.glob(f"{incomplete}*.json")
+        ]
+
 def delete_chat_callback(ctx, param, value):
     if not value:
         return
@@ -99,18 +112,40 @@ def list_chats_callback(ctx, param, value):
             click.echo(f" - {file.stem}")
     ctx.exit()
 
+# Custom type for environment name completion
+class EnvNameCompletionType(click.ParamType):
+    name = "envname"
+    def shell_complete(self, ctx, param, incomplete):
+        return [
+            click.shell_completion.CompletionItem(path.stem) for path in ENV_PATH.glob(f"{incomplete}*.env")
+        ]
+    
+# callback function for --use-env option
+def use_env_callback(ctx, param, value):
+    if not value:
+        return
+    env_file = ENV_PATH / f"{value}.env"
+    if env_file.exists():
+        content = env_file.read_text()
+        MAIN_ENV_PATH.write_text(content)
+        setup()
+        click.echo(f"Environment '{value}' activated.")
+    else:
+        raise click.BadParameter(f"Environment file {env_file} does not exist.")
+    return value
+
 @click.group()
 def cli():
     """A CLI for interacting with ChatGPT with advanced options."""
     pass
 
-@cli.command()
+@cli.command(help=help_message)
 @click.argument('message', nargs=-1)
 @click.option('-m', '--model', default=None, help='Model name')
 @click.option('-b', '--base-url', default=None, help='Base URL of the API (without suffix `/v1`)')
 @click.option('--api-base', default=None, help='Base URL of the API (with suffix `/v1`)')
 @click.option('-a', '--api-key', default=None, help='OpenAI API key')
-@click.option('-u', '--use-env', default=None, help='Use environment variables from the ENV_PATH')
+@click.option('-u', '--use-env', type=EnvNameCompletionType(), help='Use environment variables from the `~/.askchat/envs`', callback=use_env_callback, expose_value=True)
 # Chat with history
 @click.option('-c', is_flag=True, help='Continue the last conversation')
 @click.option('-r', '--regenerate', is_flag=True, help='Regenerate the last conversation')
@@ -118,7 +153,7 @@ def cli():
 # Handling chat history
 @click.option('-p', '--print', is_flag=True, help='Print the last conversation or a specific conversation')
 @click.option('-s', '--save', callback=save_chat_callback, expose_value=False, help='Save the conversation to a file')
-@click.option('-d', '--delete', callback=delete_chat_callback, expose_value=False, help='Delete the conversation from a file')
+@click.option('-d', '--delete', type=DeleteChatCompletionType(), callback=delete_chat_callback, expose_value=False, help='Delete the conversation from a file')
 @click.option('--list', is_flag=True, callback=list_chats_callback, expose_value=False, help='List all the conversation files')
 # Other options
 @click.option('--generate-config', is_flag=True, callback=generate_config_callback, expose_value=False, help='Generate a configuration file by environment table')
@@ -129,14 +164,8 @@ def cli():
 def main( message, model, base_url, api_base, api_key, use_env
         , c, regenerate, load, print):
     """Interact with ChatGPT in terminal via chattool"""
-    # read environment variables from the ENV_PATH
-    if use_env:
-        env_file = ENV_PATH / f"{use_env}.env"
-        if env_file.exists():
-            load_dotenv(env_file, override=True)
-        else:
-            click.echo(f"Environment file {env_file} does not exist.")
-            return
+    message_text = ' '.join(message).strip()
+    if use_env and not message_text: return
     # set values for the environment variables
     if api_key:
         os.environ['OPENAI_API_KEY'] = api_key
@@ -148,7 +177,6 @@ def main( message, model, base_url, api_base, api_key, use_env
         os.environ['OPENAI_API_MODEL'] = model
     chattool.load_envs() # update the environment variables in chattool
     # print chat messages
-    message_text = ' '.join(message).strip()
     if print:
         fname = message_text if message_text else '_last_chat'
         fname = f"{CONFIG_PATH}/{fname}.json"
