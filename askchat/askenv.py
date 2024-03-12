@@ -1,5 +1,5 @@
 import click
-from askchat import write_config, ENV_PATH, MAIN_ENV_PATH
+from askchat import write_config, ENV_PATH, MAIN_ENV_PATH, EnvNameCompletionType
 from dotenv import set_key
 
 help_message = """Manage askchat environments.
@@ -38,14 +38,13 @@ def new(name, api_key, base_url, api_base, model):
     config_path = ENV_PATH / f'{name}.env'
     if config_path.exists():
         click.echo(f"Warning: Overwriting existing environment '{name}'.")
-        # use click.confirm to ask for user confirmation
         click.confirm("Do you want to continue?", abort=True)
     else:
         click.echo(f"Environment '{name}' created.")
     write_config(config_path, api_key, model, base_url, api_base)
 
 @cli.command()
-@click.argument('name', required=False)  # Make 'name' argument optional
+@click.argument('name', required=False, type=EnvNameCompletionType())
 @click.option('--default', is_flag=True, help='Delete the default environment configuration')
 def delete(name, default):
     """Delete an environment configuration."""
@@ -68,7 +67,7 @@ def delete(name, default):
             click.echo(f"Environment '{name}' not found.")
 
 @cli.command()
-@click.argument('name', required=False)
+@click.argument('name', required=False, type=EnvNameCompletionType())
 def show(name):
     """Print environment variables. Show default if no name is provided."""
     config_path = ENV_PATH / f'{name}.env' if name else MAIN_ENV_PATH
@@ -88,13 +87,16 @@ def save(name):
     if MAIN_ENV_PATH.exists():
         content = MAIN_ENV_PATH.read_text()
         config_path = ENV_PATH / f'{name}.env'
+        if config_path.exists():
+            click.echo(f"Warning: Overwriting existing environment '{name}'.")
+            click.confirm("Do you want to continue?", abort=True)
         config_path.write_text(content)
         click.echo(f"Environment '{name}' saved.")
     else:
         click.echo("No active environment to save.")
 
 @cli.command()
-@click.argument('name')
+@click.argument('name', type=EnvNameCompletionType())
 def use(name):
     """Activate an environment by replacing the .env file."""
     config_path = ENV_PATH / f'{name}.env'
@@ -110,7 +112,7 @@ def use(name):
 @click.option('-b', '--base-url', help='Base URL of the API (without suffix `/v1`)')
 @click.option('--api-base', help='Base URL of the API (with suffix `/v1`)')
 @click.option('-m', '--model', help='Model name')
-@click.argument('name', required=False)
+@click.argument('name', required=False, type=EnvNameCompletionType())
 def config(name, api_key, base_url, api_base, model):
     """Update default .env values."""
     if not any([api_key, base_url, api_base, model]):

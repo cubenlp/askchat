@@ -11,6 +11,7 @@ from askchat import (
       show_resp, write_config
     , ENV_PATH, MAIN_ENV_PATH
     , CONFIG_PATH, CONFIG_FILE
+    , EnvNameCompletionType, ChatFileCompletionType
 )
 
 # Version and Config Path
@@ -86,13 +87,6 @@ def save_chat_callback(ctx, param, value):
         click.echo("No last conversation to save.")
     ctx.exit()
 
-class DeleteChatCompletionType(click.ParamType):
-    name = "deletechat"
-    def shell_complete(self, ctx, param, incomplete):
-        return [
-            click.shell_completion.CompletionItem(path.stem) for path in CONFIG_PATH.glob(f"{incomplete}*.json")
-        ]
-
 def delete_chat_callback(ctx, param, value):
     if not value:
         return
@@ -112,14 +106,6 @@ def list_chats_callback(ctx, param, value):
             click.echo(f" - {file.stem}")
     ctx.exit()
 
-# Custom type for environment name completion
-class EnvNameCompletionType(click.ParamType):
-    name = "envname"
-    def shell_complete(self, ctx, param, incomplete):
-        return [
-            click.shell_completion.CompletionItem(path.stem) for path in ENV_PATH.glob(f"{incomplete}*.env")
-        ]
-    
 # callback function for --use-env option
 def use_env_callback(ctx, param, value):
     if not value:
@@ -153,7 +139,7 @@ def cli():
 # Handling chat history
 @click.option('-p', '--print', is_flag=True, help='Print the last conversation or a specific conversation')
 @click.option('-s', '--save', callback=save_chat_callback, expose_value=False, help='Save the conversation to a file')
-@click.option('-d', '--delete', type=DeleteChatCompletionType(), callback=delete_chat_callback, expose_value=False, help='Delete the conversation from a file')
+@click.option('-d', '--delete', type=ChatFileCompletionType(), callback=delete_chat_callback, expose_value=False, help='Delete the conversation from a file')
 @click.option('--list', is_flag=True, callback=list_chats_callback, expose_value=False, help='List all the conversation files')
 # Other options
 @click.option('--generate-config', is_flag=True, callback=generate_config_callback, expose_value=False, help='Generate a configuration file by environment table')

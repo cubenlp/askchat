@@ -42,7 +42,6 @@ def test_list_initially_empty(runner, setup_env):
     result = runner.invoke(cli, ["list"])
     assert env_name in result.output
 
-
 def test_delete_environment(runner, setup_env):
     """Test deleting an environment configuration."""
     env_name, config_path = setup_env

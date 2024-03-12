@@ -2,10 +2,11 @@
 
 __author__ = """Rex Wang"""
 __email__ = '1073853456@qq.com'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 import asyncio
 from pathlib import Path
+import click
 
 # Main environment file
 CONFIG_PATH = Path.home() / ".askchat"
@@ -13,6 +14,24 @@ CONFIG_FILE = CONFIG_PATH / ".env"
 MAIN_ENV_PATH = Path.home() / '.askchat' / '.env'
 ENV_PATH = Path.home() / '.askchat' / 'envs'
 
+# Autocompletion
+# environment name completion
+class EnvNameCompletionType(click.ParamType):
+    name = "envname"
+    def shell_complete(self, ctx, param, incomplete):
+        return [
+            click.shell_completion.CompletionItem(path.stem) for path in ENV_PATH.glob(f"{incomplete}*.env")
+        ]
+# chat file completion
+class ChatFileCompletionType(click.ParamType):
+    name = "chatfile"
+    def shell_complete(self, ctx, param, incomplete):
+        return [
+            click.shell_completion.CompletionItem(path.stem) for path in CONFIG_PATH.glob(f"{incomplete}*.json")
+            if not path.name.startswith("_")
+        ]
+
+# common functions
 async def show_resp(chat):
     msg = ''
     async for char in chat.async_stream_responses(textonly=True):
