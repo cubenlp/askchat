@@ -38,6 +38,8 @@ async def show_resp(chat):
         print(char, end='', flush=True)
         msg += char
         await asyncio.sleep(0.01)
+    if not msg.endswith('\n'):
+        print() # add a newline if the message doesn't end with one
     return msg
 
 def write_config(config_file, api_key, model, base_url, api_base):
