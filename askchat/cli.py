@@ -152,8 +152,9 @@ def cli():
 @click.option('--valid-models', is_flag=True, callback=valid_models_callback, expose_value=False, help='Print valid models that contain "gpt" in their names')
 @click.option('--all-valid-models', is_flag=True, callback=all_valid_models_callback, expose_value=False, help='Print all valid models')
 @click.option('-v', '--version', is_flag=True, callback=version_callback, expose_value=False, help='Print the version')
+@click.option('-o', '--option', multiple=True, type=(str, str), help='Additional options for show_resp in the form of key=value')
 def main( message, model, base_url, api_base, api_key, use_env
-        , c, regenerate, print):
+        , c, regenerate, print, option):
     """Interact with ChatGPT in terminal via chattool"""
     setup()
     message_text = ' '.join(message).strip()
@@ -205,7 +206,7 @@ def main( message, model, base_url, api_base, api_key, use_env
             return
         chat.user(message_text)
     # Add chat response
-    chat.assistant(asyncio.run(show_resp(chat)))
+    chat.assistant(asyncio.run(show_resp(chat, **dict(option))))
     chat.save(LAST_CHAT_FILE, mode='w')
 
 if __name__ == '__main__':

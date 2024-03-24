@@ -87,7 +87,7 @@ Manage conversation history, including saving, loading, deleting, and listing co
 |-----------------|------------------------|-----------------------------------------------|
 | `-c`            | `askchat -c <message>` | Continue the last conversation               |
 | `--regenerate`  | `askchat -r`           | Regenerate the last response of the conversation |
-| `--load`        | `askchat -l <file> [message]` | Load conversation history from a file and continue |
+| `--load`        | `askchat -l <file>` | Load conversation history from a file |
 | `--print`       | `askchat -p [<file>]`  | Print the last or a specified conversation history |
 | `--save`        | `askchat -s <file>`    | Save the current conversation history to a file |
 | `--delete`      | `askchat -d <file>`    | Delete a specified conversation history file |
@@ -108,6 +108,7 @@ Default parameters for `askchat`, used for direct interaction with ChatGPT or co
 | `--base-url`    | `-b https://api.example.com`     | Set the Base URL (excluding `/v1`)           |
 | `--api-base`    | `--api-base https://api.example.com/v1` | Set the Base URL           |
 | `--api-key`     | `-a sk-xxxxxxx`                  | Provide the OpenAI API key                   |
+| `--option` | `-o top_p 1 temperature 0.5` | Set request parameters |
 | `--use-env`     | `-u prod`                        | Load environment variables from the specified config file, see [AskEnv](#askenv) |
 
 Note: Some model APIs, like ChatGPT, use `/v4` as the base path of the API, so the `--api-base` parameter would be needed.
