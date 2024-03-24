@@ -2,7 +2,7 @@
 
 __author__ = """Rex Wang"""
 __email__ = '1073853456@qq.com'
-__version__ = '1.1.1'
+__version__ = '1.1.2'
 
 import asyncio
 from pathlib import Path
@@ -32,12 +32,14 @@ class ChatFileCompletionType(click.ParamType):
         ]
 
 # common functions
-async def show_resp(chat):
+async def show_resp(chat, **options):
     msg = ''
-    async for char in chat.async_stream_responses(textonly=True):
+    async for char in chat.async_stream_responses(textonly=True, **options):
         print(char, end='', flush=True)
         msg += char
         await asyncio.sleep(0.01)
+    if not msg.endswith('\n'):
+        print() # add a newline if the message doesn't end with one
     return msg
 
 def write_config(config_file, api_key, model, base_url, api_base):

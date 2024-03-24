@@ -87,7 +87,7 @@ Options:
 |---------------------|------------------|--------------------------------------------|
 | `-c`           | `askchat -c <message>`     | 继续上一次的对话                             |
 | `--regenerate` | `askchat -r`     | 重新生成上一次对话的最后回复                   |
-| `--load`       | `askchat -l <file> [message]` | 从文件加载对话历史，继续对话           |
+| `--load`       | `askchat -l <file>` | 加载历史对话          |
 | `--print`      | `askchat -p [<file>]`     | 打印上次或指定的对话历史                       |
 | `--save`       | `askchat -s <file>` | 将当前对话历史保存到文件                      |
 | `--delete`     | `askchat -d <file>` | 删除指定的对话历史文件                        |
@@ -106,6 +106,7 @@ Options:
 | `--base-url` | `-b https://api.example.com` | 设置 Base URL (不包含 `/v1`) |
 | `--api-base`    | `--api-base https://api.example.com/v1` | 设置 Base URL  |
 | `--api-key` | `-a sk-xxxxxxx` | 提供 OpenAI API 密钥                |
+| `--option` | `-o top_p 1 temperature 0.5` | 设置请求参数 |
 | `--use-env` | `-u prod` | 使用指定配置文件加载环境变量，详见 [AskEnv](#askenv) |
 
 注：一些模型 API，比如智谱，使用 `/v4` 作为 API 的基础路径，这时得用 `--api-base` 参数。
