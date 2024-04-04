@@ -41,7 +41,7 @@ def new(name, api_key, base_url, api_base, model):
         click.confirm("Do you want to continue?", abort=True)
     else:
         click.echo(f"Environment '{name}' created.")
-    write_config(config_path, api_key, model, base_url, api_base)
+    write_config(config_path, api_key, model, base_url, api_base, overwrite=True)
 
 @cli.command()
 @click.argument('name', required=False, type=EnvNameCompletionType())
@@ -120,16 +120,10 @@ def config(name, api_key, base_url, api_base, model):
         return
     config_path = ENV_PATH / f'{name}.env' if name else MAIN_ENV_PATH
     if not config_path.exists():
-        click.echo(f"Environment '{config_path}' not found.")
+        click.echo(f"Environment '{config_path}' not found." +\
+                   "Use `askenv new` to create a new environment." )
         return
-    if api_key:
-        set_key(config_path, "OPENAI_API_KEY", api_key)
-    if base_url:
-        set_key(config_path, "OPENAI_API_BASE_URL", base_url)
-    if api_base:
-        set_key(config_path, "OPENAI_API_BASE", api_base)
-    if model:
-        set_key(config_path, "OPENAI_API_MODEL", model)
+    write_config(config_path, api_key, model, base_url, api_base)
     click.echo(f"Environment {config_path} updated.")
 
 if __name__ == '__main__':

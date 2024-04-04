@@ -8,7 +8,7 @@ import asyncio, os, shutil
 from chattool import Chat, debug_log
 from pathlib import Path
 from askchat import (
-      show_resp, write_config
+      show_resp, write_config, init_config
     , ENV_PATH, MAIN_ENV_PATH
     , CONFIG_PATH, CONFIG_FILE
     , EnvNameCompletionType, ChatFileCompletionType
@@ -37,12 +37,10 @@ def setup():
 def generate_config_callback(ctx, param, value):
     """Generate a configuration file by environment table."""
     if not value: return
-    api_key, model = os.getenv("OPENAI_API_KEY"), os.getenv("OPENAI_API_MODEL")
-    base_url, api_base = os.getenv("OPENAI_API_BASE_URL"), os.getenv("OPENAI_API_BASE")
     # save the config file
     if os.path.exists(CONFIG_FILE):
         click.confirm(f"Overwrite the existing configuration file {CONFIG_FILE}?", abort=True)
-    write_config(CONFIG_FILE, api_key, model, base_url, api_base)
+    init_config(CONFIG_FILE)
     print("Created config file at", CONFIG_FILE)
     ctx.exit()
 

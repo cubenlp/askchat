@@ -2,17 +2,37 @@
 
 __author__ = """Rex Wang"""
 __email__ = '1073853456@qq.com'
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 
 import asyncio
 from pathlib import Path
 import click
+from dotenv import set_key
+import os
 
 # Main environment file
 CONFIG_PATH = Path.home() / ".askchat"
 CONFIG_FILE = CONFIG_PATH / ".env"
 MAIN_ENV_PATH = Path.home() / '.askchat' / '.env'
 ENV_PATH = Path.home() / '.askchat' / 'envs'
+
+raw_env_text = f""""# Description: Env file for askchat.
+# Current version: {__version__}
+
+# The base url of the API (with suffix /v1)
+# This will override OPENAI_API_BASE_URL if both are set.
+OPENAI_API_BASE=''
+
+# The base url of the API (without suffix /v1)
+OPENAI_API_BASE_URL=''
+
+# Your API key
+OPENAI_API_KEY=''
+
+# The default model name
+# You can use `askchat --all-valid-models` to see supported models
+OPENAI_API_MODEL=''
+"""
 
 # Autocompletion
 # environment name completion
@@ -42,20 +62,36 @@ async def show_resp(chat, **options):
         print() # add a newline if the message doesn't end with one
     return msg
 
-def write_config(config_file, api_key, model, base_url, api_base):
-    """Write the environment variables to a config file."""
-    def write_var(f, var, value, desc):
-        value = value if value else ""
-        f.write(f"\n\n# {desc}\n")
-        f.write(f'{var}="{value}"')
-    with open(config_file, "w") as f:
-        f.write("#Description: Env file for askchat.\n" +\
-                "#Current version: " + __version__)
-        # write the environment table
-        write_var(f, "OPENAI_API_BASE", api_base, "The base url of the API (with suffix /v1)" +\
-                    "\n# This will override OPENAI_API_BASE_URL if both are set.")
-        write_var(f, "OPENAI_API_BASE_URL", base_url, "The base url of the API (without suffix /v1)")
+def set_keys(config_file, keys):
+    """Set multiple keys in the config file."""
+    for key, value in keys.items():
+        if value:
+            set_key(config_file, key, value)
 
-        write_var(f, "OPENAI_API_KEY", api_key, "Your API key")
-        write_var(f, "OPENAI_API_MODEL", model, "The model name\n" +\
-                    "# You can use `askchat --all-valid-models` to see supported models")
+def raw_config(config_file:str):
+    """Empty config file."""
+    if not CONFIG_PATH.exists():
+        CONFIG_PATH.mkdir(parents=True)
+    with open(config_file, "w") as f:
+        f.write(raw_env_text)
+
+def init_config(config_file:str):
+    """Initialize the config file with the current environment variables."""
+    raw_config(config_file)
+    set_keys(config_file, {
+        "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY"),
+        "OPENAI_API_MODEL": os.getenv("OPENAI_API_MODEL"),
+        "OPENAI_API_BASE_URL": os.getenv("OPENAI_API_BASE_URL"),
+        "OPENAI_API_BASE": os.getenv("OPENAI_API_BASE"),
+    })
+
+def write_config(config_file, api_key, model, base_url, api_base, overwrite=False):
+    """Write the environment variables to a config file."""
+    if overwrite or not config_file.exists():
+        raw_config(config_file)
+    set_keys(config_file, {
+        "OPENAI_API_KEY": api_key,
+        "OPENAI_API_MODEL": model,
+        "OPENAI_API_BASE_URL": base_url,
+        "OPENAI_API_BASE": api_base,
+    })

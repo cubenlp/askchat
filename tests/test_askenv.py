@@ -33,7 +33,7 @@ def test_overwrite_environment_confirm(runner, setup_env):
     assert "Do you want to continue?" in result.output
     # Verify the environment was overwritten by checking if the new API key is in the file
     with open(config_path) as f:
-        assert 'OPENAI_API_KEY="456"' in f.read()
+        assert "OPENAI_API_KEY='456'" in f.read()
 
 def test_list_initially_empty(runner, setup_env):
     """Ensure no environments are listed when none have been created."""
