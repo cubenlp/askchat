@@ -4,7 +4,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '1.1.3'
+VERSION = '1.1.4'
 
 with open('README.md') as readme_file:
     readme = readme_file.read()

@@ -203,7 +203,19 @@ def main( message, model, base_url, api_base, api_key, use_env
             click.echo("Please specify message!")
             return
         chat.user(message_text)
-    # Add chat response
+    # additinal options
+    if option:
+        option = dict(option)
+        ints = ['max_tokens', 'n', 'top_logprobs', 'seed']
+        floats = ['temperature', 'presence_penalty', 'frequency_penalty', 'top_p']
+        for key, value in option.items():
+            if key in ints:
+                option[key] = int(value)
+            elif key in floats:
+                option[key] = float(value)
+    else:
+        option = {}
+    # Add chat responses
     chat.assistant(asyncio.run(show_resp(chat, **dict(option))))
     chat.save(LAST_CHAT_FILE, mode='w')
 
