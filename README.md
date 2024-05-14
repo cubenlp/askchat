@@ -21,9 +21,15 @@
 [English](README-en.md) | [简体中文](README.md)
 </div>
 
-在终端与 ChatGPT 交互，随时随地调用 ChatGPT。
+AskChat 是一个通过命令行运行的，无界面的 ChatGPT 交互工具，随时随地调用 ChatGPT。
+
+在终端调用：
 
 ![hello](docs/assets/svgs/hello.svg)
+
+在 Jupyter Notebook 中调用：
+
+![jupyter](docs/assets/jupyter.gif)
 
 ## 安装及配置
 
@@ -59,15 +65,19 @@ ask hello world
 ### 使用示例
 
 1. API 调试，测试默认参数和返回结果。
+
     ![debug](docs/assets/svgs/debug.svg)
 
 2. 获取可用模型列表。
+
     ![validmodels](docs/assets/svgs/validmodels.svg)
 
 3. 多轮对话，保存对话，加载对话等。
+
     ![chatlog](docs/assets/svgs/chatlog.svg)
 
 4. 指定参数，使用不同的模型和 API。
+
     ![para-models](docs/assets/svgs/para-models.svg)
 
 ### 对话管理
@@ -123,10 +133,12 @@ ask hello world
 ### 示例
 
 1. 创建，查看，激活和删除渠道
+
     ![askenv](docs/assets/svgs/askenv.svg)
 
 2. 编辑渠道
-   ![askenv-config](docs/assets/svgs/editenv.svg)
+
+    ![askenv-config](docs/assets/svgs/editenv.svg)
 
 
 ### 基本用法

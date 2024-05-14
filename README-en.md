@@ -21,9 +21,15 @@
 [English](README-en.md) | [简体中文](README.md)
 </div>
 
-Interact with ChatGPT at the terminal, invoking ChatGPT anytime and anywhere.
+AskChat is a command-line tool for ChatGPT interaction, allowing you to call ChatGPT anytime, anywhere.
+
+Run in the terminal:
 
 ![hello](docs/assets/svgs/hello.svg)
+
+Run in Jupyter Notebook:
+
+![jupyter](docs/assets/jupyter.gif)
 
 ## Installation and Configuration
 
@@ -59,15 +65,19 @@ In addition, you can use `askchat` for more flexible dialogue and `askenv` to ma
 ### Usage Examples
 
 1. API debugging, testing default parameters and return results.
+
     ![debug](docs/assets/svgs/debug.svg)
 
 2. Get a list of available models.
+
     ![validmodels](docs/assets/svgs/validmodels.svg)
 
 3. Multi-turn dialogue, saving dialogues, loading dialogues, etc.
+
     ![chatlog](docs/assets/svgs/chatlog.svg)
 
 4. Specify parameters, using different models and APIs.
+
     ![para-models](docs/assets/svgs/para-models.svg)
 
 ### Dialogue Management
@@ -125,9 +135,11 @@ Note: `--all-valid-models` will print all available models, including Embedding,
 ### Examples
 
 1. Create, view, activate, and delete channels.
+
     ![askenv](docs/assets/svgs/askenv.svg)
 
 2. Edit channel.
+
    ![askenv-config](docs/assets/svgs/editenv.svg)
 
 
