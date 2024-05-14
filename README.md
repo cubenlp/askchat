@@ -21,15 +21,17 @@
 [English](README-en.md) | [简体中文](README.md)
 </div>
 
-AskChat 是一个通过命令行运行的，无界面的 ChatGPT 交互工具，随时随地调用 ChatGPT。
+通过命令行运行的 ChatGPT 交互工具，随时随地调用 ChatGPT。
 
-在终端调用：
+<div align="center">
+    <div style="margin-top: 10px; color: #555;">终端调用</div>
+    <img src="docs/assets/svgs/hello.svg" alt="hello" width="480">
+</div>
 
-![hello](docs/assets/svgs/hello.svg)
-
-在 Jupyter Notebook 中调用：
-
-![jupyter](docs/assets/jupyter.gif)
+<div align="center">
+    <div style="margin-top: 10px; color: #555;">Jupyter Lab</div>
+    <img src="docs/assets/jupyter.gif" alt="jupyter" width="480">
+</div>
 
 ## 安装及配置
 
@@ -64,21 +66,25 @@ ask hello world
 
 ### 使用示例
 
-1. API 调试，测试默认参数和返回结果。
+<div align="center">
+    <div style="margin-top: 10px; color: #555;">1. API 调试</div>
+    <img src="docs/assets/svgs/debug.svg" alt="debug" width="480">
+</div>
 
-    ![debug](docs/assets/svgs/debug.svg)
+<div align="center">
+    <div style="margin-top: 10px; color: #555;">2. 获取可用模型列表</div>
+    <img src="docs/assets/svgs/validmodels.svg" alt="validmodels" width="480">
+</div>
 
-2. 获取可用模型列表。
+<div align="center">
+    <div style="margin-top: 10px; color: #555;">3. 多轮对话，保存对话，加载对话等</div>
+    <img src="docs/assets/svgs/chatlog.svg" alt="chatlog" width="480">
+</div>
 
-    ![validmodels](docs/assets/svgs/validmodels.svg)
-
-3. 多轮对话，保存对话，加载对话等。
-
-    ![chatlog](docs/assets/svgs/chatlog.svg)
-
-4. 指定参数，使用不同的模型和 API。
-
-    ![para-models](docs/assets/svgs/para-models.svg)
+<div align="center">
+    <div style="margin-top: 10px; color: #555;">4. 指定参数，使用不同的模型和 API</div>
+    <img src="docs/assets/svgs/para-models.svg" alt="para-models" width="480">
+</div>
 
 ### 对话管理
 
@@ -132,14 +138,15 @@ ask hello world
 
 ### 示例
 
-1. 创建，查看，激活和删除渠道
+<div align="center">
+    <div style="margin-top: 10px; color: #555;">1. 创建渠道</div>
+    <img src="docs/assets/svgs/askenv.svg" alt="askenv" width="480">
+</div>
 
-    ![askenv](docs/assets/svgs/askenv.svg)
-
-2. 编辑渠道
-
-    ![askenv-config](docs/assets/svgs/editenv.svg)
-
+<div align="center">
+    <div style="margin-top: 10px; color: #555;">2. 编辑渠道</div>
+    <img src="docs/assets/svgs/editenv.svg" alt="editenv" width="480">
+</div>
 
 ### 基本用法
 
@@ -192,6 +199,8 @@ ask hello world
     askenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```
 
-## 问题和反馈
+## 问
+
+题和反馈
 
 使用过程中有任何问题或建议，欢迎提交 [Issue](https://github.com/cubenlp/askchat/issues)。

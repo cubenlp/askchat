@@ -23,13 +23,19 @@
 
 AskChat is a command-line tool for ChatGPT interaction, allowing you to call ChatGPT anytime, anywhere.
 
-Run in the terminal:
+<div align="center">
+    <figure>
+        <figcaption>Run in Terminal</figcaption>
+        <img src="docs/assets/svgs/hello.svg" alt="hello" width="480">
+    </figure>
+</div>
 
-![hello](docs/assets/svgs/hello.svg)
-
-Run in Jupyter Notebook:
-
-![jupyter](docs/assets/jupyter.gif)
+<div align="center">
+    <figure>
+    <figcaption>Jupyter Lab</figcaption>
+    <img src="docs/assets/jupyter.gif" alt="jupyter" width="480">
+    </figure>
+</div>
 
 ## Installation and Configuration
 
@@ -64,21 +70,33 @@ In addition, you can use `askchat` for more flexible dialogue and `askenv` to ma
 
 ### Usage Examples
 
-1. API debugging, testing default parameters and return results.
+<div align="center">
+    <figure>
+    <figcaption>1. API debugging</figcaption>
+    <img src="docs/assets/svgs/debug.svg" alt="debug" width="480">
+    </figure>
+</div>
 
-    ![debug](docs/assets/svgs/debug.svg)
+<div align="center">
+    <figure>
+    <figcaption>2. Get a list of available models</figcaption>
+    <img src="docs/assets/svgs/validmodels.svg" alt="validmodels" width="480">
+    </figure>
+</div>
 
-2. Get a list of available models.
+<div align="center">
+    <figure>
+    <figcaption>3. Multi-turn dialogue, saving dialogues, loading dialogues, etc.</figcaption>
+    <img src="docs/assets/svgs/chatlog.svg" alt="chatlog" width="480">
+    </figure>
+</div>
 
-    ![validmodels](docs/assets/svgs/validmodels.svg)
-
-3. Multi-turn dialogue, saving dialogues, loading dialogues, etc.
-
-    ![chatlog](docs/assets/svgs/chatlog.svg)
-
-4. Specify parameters, using different models and APIs.
-
-    ![para-models](docs/assets/svgs/para-models.svg)
+<div align="center">
+    <figure>
+    <figcaption>4. Specify parameters, using different models and APIs</figcaption>
+    <img src="docs/assets/svgs/para-models.svg" alt="para-models" width="480">
+    </figure>
+</div>
 
 ### Dialogue Management
 
@@ -121,9 +139,7 @@ Auxiliary features, such as generating configuration files, debugging logs, prin
 | `--generate-config`      | `askchat --generate-config`      | Generate a configuration file, saved in `~/.askchat/.env` |
 | `--debug`                | `askchat --debug`                | Print debugging logs                  |
 | `--valid-models`         | `askchat --valid-models`         | Print a list of models containing "gpt" in their names |
-| `--all
-
--valid-models`     | `askchat --all-valid-models`     | Print all available models            |
+| `--all-valid-models`     | `askchat --all-valid-models`     | Print all available models            |
 | `--version`              | `askchat -v`                     | Version information of `askchat`      |
 
 Note: `--all-valid-models` will print all available models, including Embedding, dalle-3, tts, etc., use `--valid-models` to filter these out.
@@ -134,14 +150,19 @@ Note: `--all-valid-models` will print all available models, including Embedding,
 
 ### Examples
 
-1. Create, view, activate, and delete channels.
+<div align="center">
+    <figure>
+    <figcaption>1. Create channel</figcaption>
+    <img src="docs/assets/svgs/askenv.svg" alt="askenv" width="480">
+    </figure>
+</div>
 
-    ![askenv](docs/assets/svgs/askenv.svg)
-
-2. Edit channel.
-
-   ![askenv-config](docs/assets/svgs/editenv.svg)
-
+<div align="center">
+    <figure>
+    <figcaption>2. Edit channel</figcaption>
+    <img src="docs/assets/svgs/editenv.svg" alt="editenv" width="480">
+    </figure>
+</div>
 
 ### Basic Usage
 
