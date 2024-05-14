@@ -16,12 +16,14 @@
 </div>
 
 <div align="center">
-<img src="https://qiniu.wzhecnu.cn/PicBed6/picgo/askchat.jpeg" alt="Ask Chat" width="256">
+<img src="docs/assets/askchat.png" alt="Ask Chat" width="256">
 
 [English](README-en.md) | [简体中文](README.md)
 </div>
 
-Interact with ChatGPT from the command line.
+Interact with ChatGPT at the terminal, invoking ChatGPT anytime and anywhere.
+
+![hello](docs/assets/svgs/hello.svg)
 
 ## Installation and Configuration
 
@@ -29,107 +31,107 @@ Interact with ChatGPT from the command line.
 pip install askchat --upgrade
 ```
 
-Configure the environment variables:
+Configure environment variables:
 
 ```bash
 export OPENAI_API_KEY="your-api-key"
-export OPENAI_API_BASE_URL="https://api.openai.com"
 export OPENAI_API_BASE="https://api.openai.com/v1"
-export OPENAI_MODEL="gpt-3.5-turbo"
+export OPENAI_API_BASE_URL="https://api.openai.com"
+export OPENAI_API_MODEL="gpt-3.5-turbo"
 ```
 
-Note: The `OPENAI_API_BASE` variable has priority over `OPENAI_API_BASE_URL`. Use one of them as needed.
+Note: The `OPENAI_API_BASE` variable takes precedence over the `OPENAI_API_BASE_URL` variable; choose one.
 
-## Usage
+## How to Use
 
-To run using the default environment variables, simply execute:
+Use environment variables for simple question and answer:
 
 ```bash
 ask hello world
 ```
 
+In addition, you can use `askchat` for more flexible dialogue and `askenv` to manage environment configurations.
+
 ## AskChat
 
-`askchat`, beyond direct use, supports more flexible conversation management with the following options:
+`askchat` supports API debugging, dialogue management, and other functionalities.
 
-```bash
-❯ askchat --help
-Usage: askchat [OPTIONS] [MESSAGE]...
+### Usage Examples
 
-  Interact with ChatGPT in terminal via chattool
+1. API debugging, testing default parameters and return results.
+    ![debug](docs/assets/svgs/debug.svg)
 
-Options:
-  -m, --model TEXT     Model name
-  -b, --base-url TEXT  Base URL of the API (without suffix `/v1`)
-  --api-base TEXT      Base URL of the API (with suffix `/v1`)
-  -a, --api-key TEXT   OpenAI API key
-  -u, --use-env TEXT   Use environment variables from the ENV_PATH
-  -c                   Continue the last conversation
-  -r, --regenerate     Regenerate the last conversation
-  -l, --load TEXT      Load the conversation from a file
-  -p, --print          Print the last conversation or a specific conversation
-  -s, --save TEXT      Save the conversation to a file
-  -d, --delete TEXT    Delete the conversation from a file
-  --list               List all the conversation files
-  --generate-config    Generate a configuration file by environment table
-  --debug              Print debug log
-  --valid-models       Print valid models that contain "gpt" in their names
-  --all-valid-models   Print all valid models
-  -v, --version        Print the version
-  --help               Show this message and exit.
-```
+2. Get a list of available models.
+    ![validmodels](docs/assets/svgs/validmodels.svg)
 
-### Conversation Management
+3. Multi-turn dialogue, saving dialogues, loading dialogues, etc.
+    ![chatlog](docs/assets/svgs/chatlog.svg)
 
-Manage conversation history, including saving, loading, deleting, and listing conversations, as well as continuing previous dialogues.
+4. Specify parameters, using different models and APIs.
+    ![para-models](docs/assets/svgs/para-models.svg)
 
-| Option          | Example                | Description                                   |
-|-----------------|------------------------|-----------------------------------------------|
-| `-c`            | `askchat -c <message>` | Continue the last conversation               |
-| `--regenerate`  | `askchat -r`           | Regenerate the last response of the conversation |
-| `--load`        | `askchat -l <file>` | Load conversation history from a file |
-| `--print`       | `askchat -p [<file>]`  | Print the last or a specified conversation history |
-| `--save`        | `askchat -s <file>`    | Save the current conversation history to a file |
-| `--delete`      | `askchat -d <file>`    | Delete a specified conversation history file |
-| `--list`        | `askchat --list`       | List all saved conversation history files     |
+### Dialogue Management
 
-All conversations are saved in `~/.askchat/`, with the most recent conversation saved in `~/.askchat/_last_chat.json`.
+Users save, load, delete, and list dialogue histories, as well as continue previous dialogues.
 
-### Specified Parameters
+| Parameter         | Example                 | Explanation                              |
+|-------------------|-------------------------|------------------------------------------|
+| `-c`              | `askchat -c <message>`  | Continue the last conversation           |
+| `--regenerate`    | `askchat -r`            | Regenerate the last reply in a conversation |
+| `--load`          | `askchat -l <file>`     | Load historical dialogues                |
+| `--print`         | `askchat -p [<file>]`   | Print the last or a specified dialogue history |
+| `--save`          | `askchat -s <file>`     | Save the current dialogue history to a file |
+| `--delete`        | `askchat -d <file>`     | Delete a specified dialogue history file |
+| `--list`          | `askchat --list`        | List all saved dialogue history files    |
 
-Default parameters for `askchat`, used for direct interaction with ChatGPT or configuring the API connection.
+All dialogues are saved in `~/.askchat/`, with the most recent dialogue saved in `~/.askchat/_last_chat.json`.
 
-| Option          | Example                          | Description                                  |
-|-----------------|----------------------------------|----------------------------------------------|
-| `<message
+### Model Parameters
 
->`     | `askchat hello`                  | The simplest form of dialogue                |
-| `--model`       | `-m gpt-3.5-turbo`               | Specify the model name                       |
-| `--base-url`    | `-b https://api.example.com`     | Set the Base URL (excluding `/v1`)           |
-| `--api-base`    | `--api-base https://api.example.com/v1` | Set the Base URL           |
-| `--api-key`     | `-a sk-xxxxxxx`                  | Provide the OpenAI API key                   |
-| `--option` | `-o top_p 1 temperature 0.5` | Set request parameters |
-| `--use-env`     | `-u prod`                        | Load environment variables from the specified config file, see [AskEnv](#askenv) |
+Default parameters for `askchat`, these are used for direct interaction with ChatGPT or to configure API connection info.
 
-Note: Some model APIs, like ChatGPT, use `/v4` as the base path of the API, so the `--api-base` parameter would be needed.
+| Parameter        | Example                           | Explanation                        |
+|------------------|-----------------------------------|------------------------------------|
+| `<message>`      | `askchat hello`                   | Simplest form of dialogue          |
+| `--model`        | `-m gpt-3.5-turbo`                | Specify the model to be used       |
+| `--base-url`     | `-b https://api.example.com`      | Set the Base URL (excluding `/v1`) |
+| `--api-base`     | `--api-base https://api.example.com/v1` | Set the Base URL        |
+| `--api-key`      | `-a sk-xxxxxxx`                   | Provide the OpenAI API key         |
+| `--option`       | `-o top_p 1 temperature 0.5`      | Set request parameters             |
+| `--use-env`      | `-u prod`                         | Load environment variables from a specified config, see [AskEnv](#askenv) |
 
-### Other Options
+Note: Some model APIs, such as Zhishu, use `/v4` as the API base path, in which case use the `--api-base` parameter.
 
-Auxiliary features such as generating configuration files, printing debug logs, listing models, and showing version information.
+### Additional Parameters
 
-| Option                  | Example                         | Description                                    |
-|-------------------------|---------------------------------|------------------------------------------------|
-| `--generate-config`     | `askchat --generate-config`     | Generate a config file, saved in `~/.askchat/.env` |
-| `--debug`               | `askchat --debug`               | Print debug logs                               |
-| `--valid-models`        | `askchat --valid-models`        | Print a list of models containing "gpt" in their names |
-| `--all-valid-models`    | `askchat --all-valid-models`    | Print all models                               |
-| `--version`             | `askchat -v`                    | `askchat` version information                  |
+Auxiliary features, such as generating configuration files, debugging logs, printing model lists, and showing version information, etc., use `--help` to see all supported parameters.
 
-Note: `--all-valid-models` prints all available models, including Embedding, dalle-3, tts, etc., use `--valid-models` to filter these out.
+| Parameter                | Example                          | Explanation                           |
+|--------------------------|----------------------------------|---------------------------------------|
+| `--generate-config`      | `askchat --generate-config`      | Generate a configuration file, saved in `~/.askchat/.env` |
+| `--debug`                | `askchat --debug`                | Print debugging logs                  |
+| `--valid-models`         | `askchat --valid-models`         | Print a list of models containing "gpt" in their names |
+| `--all
+
+-valid-models`     | `askchat --all-valid-models`     | Print all available models            |
+| `--version`              | `askchat -v`                     | Version information of `askchat`      |
+
+Note: `--all-valid-models` will print all available models, including Embedding, dalle-3, tts, etc., use `--valid-models` to filter these out.
 
 ## AskEnv
 
-`askenv` is used to manage different environment configurations, supporting operations such as create, activate, delete, etc. It facilitates switching between different environments, managing API keys, model names, and API base URLs.
+`askenv` is used to manage different environment configurations, including creating, activating, deleting, etc., making it easy to switch between different channels.
+
+### Examples
+
+1. Create, view, activate, and delete channels.
+    ![askenv](docs/assets/svgs/askenv.svg)
+
+2. Edit channel.
+   ![askenv-config](docs/assets/svgs/editenv.svg)
+
+
+### Basic Usage
 
 1. Create a new environment configuration using the `new` command.
 
@@ -137,7 +139,13 @@ Note: `--all-valid-models` prints all available models, including Embedding, dal
     askenv new <name> [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```
 
-2. Activate an environment, setting it as the current configuration.
+    Or generate a default config from environment variables using `askchat --generate-config`:
+
+    ```bash
+    askchat --generate-config
+    ```
+
+2. Activate a certain environment, setting it as the currently used configuration.
 
     ```bash
     askenv use <name>
@@ -150,26 +158,30 @@ Note: `--all-valid-models` prints all available models, including Embedding, dal
     askenv delete --default
     ```
 
-4. List all available environments.
+4. List all currently available environments.
 
     ```bash
     askenv list
     ```
 
-5. Display the configuration information for a specified environment, or the default environment if no name is provided.
+5. Show configuration info of a specified environment, or the default environment if no name is specified.
 
     ```bash
     askenv show [name]
     ```
 
-6. Save the currently active environment configuration to a specified name.
+6. Save the currently activated environment configuration as a specified name's configuration file.
 
     ```bash
     askenv save <name>
     ```
 
-7. Update one or more settings for a specified or default environment configuration.
+7. Update one or more settings of a specified or default environment configuration.
 
     ```bash
     askenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```
+
+## Issues and Feedback
+
+If you encounter any problems or have suggestions, feel free to submit an [Issue](https://github.com/cubenlp/askchat/issues).

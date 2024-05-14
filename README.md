@@ -16,12 +16,14 @@
 </div>
 
 <div align="center">
-<img src="https://qiniu.wzhecnu.cn/PicBed6/picgo/askchat.jpeg" alt="Ask Chat" width="256">
+<img src="docs/assets/askchat.png" alt="Ask Chat" width="256">
 
 [English](README-en.md) | [简体中文](README.md)
 </div>
 
-在命令行中与 ChatGPT 交互。
+在终端与 ChatGPT 交互，随时随地调用 ChatGPT。
+
+![hello](docs/assets/svgs/hello.svg)
 
 ## 安装及配置
 
@@ -33,51 +35,40 @@ pip install askchat --upgrade
 
 ```bash
 export OPENAI_API_KEY="your-api-key"
-export OPENAI_API_BASE_URL="https://api.openai.com"
 export OPENAI_API_BASE="https://api.openai.com/v1"
-export OPENAI_MODEL="gpt-3.5-turbo"
+export OPENAI_API_BASE_URL="https://api.openai.com"
+export OPENAI_API_MODEL="gpt-3.5-turbo"
 ```
 
 注：`OPENAI_API_BASE` 变量优先于 `OPENAI_API_BASE_URL` 变量，二者选一即可。
 
 ## 使用方法
 
-使用默认环境变量，简单地运行：
+使用环境变量，进行简单的问答：
 
 ```bash
 ask hello world
 ```
 
+除此之外，可使用 `askchat` 进行更灵活的对话，使用 `askenv` 管理环境配置。
+
 ## AskChat
 
-`askchat` 除了直接使用外，支持更灵活地对话管理，选项如下：
+`askchat` 支持 API 调试，对话管理等功能。
 
-```bash
-❯ askchat --help
-Usage: askchat [OPTIONS] [MESSAGE]...
+### 使用示例
 
-  Interact with ChatGPT in terminal via chattool
+1. API 调试，测试默认参数和返回结果。
+    ![debug](docs/assets/svgs/debug.svg)
 
-Options:
-  -m, --model TEXT     Model name
-  -b, --base-url TEXT  Base URL of the API (without suffix `/v1`)
-  --api-base TEXT      Base URL of the API (with suffix `/v1`)
-  -a, --api-key TEXT   OpenAI API key
-  -u, --use-env TEXT   Use environment variables from the ENV_PATH
-  -c                   Continue the last conversation
-  -r, --regenerate     Regenerate the last conversation
-  -l, --load TEXT      Load the conversation from a file
-  -p, --print          Print the last conversation or a specific conversation
-  -s, --save TEXT      Save the conversation to a file
-  -d, --delete TEXT    Delete the conversation from a file
-  --list               List all the conversation files
-  --generate-config    Generate a configuration file by environment table
-  --debug              Print debug log
-  --valid-models       Print valid models that contain "gpt" in their names
-  --all-valid-models   Print all valid models
-  -v, --version        Print the version
-  --help               Show this message and exit.
-```
+2. 获取可用模型列表。
+    ![validmodels](docs/assets/svgs/validmodels.svg)
+
+3. 多轮对话，保存对话，加载对话等。
+    ![chatlog](docs/assets/svgs/chatlog.svg)
+
+4. 指定参数，使用不同的模型和 API。
+    ![para-models](docs/assets/svgs/para-models.svg)
 
 ### 对话管理
 
@@ -95,7 +86,7 @@ Options:
 
 所有对话保存在 `~/.askchat/`，最近一次对话保存在 `~/.askchat/_last_chat.json`。
 
-### 指定参数
+### 模型参数
 
 `askchat` 的默认参数，这些参数用于直接与 ChatGPT 交互或者配置 API 的连接信息。
 
@@ -111,9 +102,9 @@ Options:
 
 注：一些模型 API，比如智谱，使用 `/v4` 作为 API 的基础路径，这时得用 `--api-base` 参数。
 
-### 其他选项
+### 其他参数
 
-一些辅助功能，如生成配置文件、调试日志、打印模型列表和显示版本信息。
+辅助功能，如生成配置文件、调试日志、打印模型列表和显示版本信息等，使用 `--help` 查看所有支持的参数。
 
 | 参数                      | 示例                 | 解释                                       |
 |---------------------------|----------------------|--------------------------------------------|
@@ -127,12 +118,29 @@ Options:
 
 ## AskEnv
 
-`askenv` 用于管理不同的环境配置，支持创建、激活、删除等操作，便于在不同的环境之间切换，管理 API 密钥、模型名称和 API 的基础 URL 等配置信息。
+`askenv` 用于管理不同的环境配置，包括创建、激活、删除等操作，便于在不同的渠道间切换。
+
+### 示例
+
+1. 创建，查看，激活和删除渠道
+    ![askenv](docs/assets/svgs/askenv.svg)
+
+2. 编辑渠道
+   ![askenv-config](docs/assets/svgs/editenv.svg)
+
+
+### 基本用法
 
 1. 创建一个新的环境配置，使用 `new` 命令。
 
     ```bash
     askenv new <name> [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
+    ```
+
+    或者用 `askchat --generate-config` 从环境变量生成默认配置：
+
+    ```bash
+    askchat --generate-config
     ```
 
 2. 激活某个环境，将其设置为当前使用的配置。
@@ -171,3 +179,7 @@ Options:
     ```bash
     askenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```
+
+## 问题和反馈
+
+使用过程中有任何问题或建议，欢迎提交 [Issue](https://github.com/cubenlp/askchat/issues)。
