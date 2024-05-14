@@ -8,7 +8,7 @@ import asyncio, os, shutil
 from chattool import Chat, debug_log
 from pathlib import Path
 from askchat import (
-      show_resp, write_config, init_config
+      show_resp, write_config, initialize_config
     , ENV_PATH, MAIN_ENV_PATH
     , CONFIG_PATH, CONFIG_FILE
     , EnvNameCompletionType, ChatFileCompletionType
@@ -40,7 +40,7 @@ def generate_config_callback(ctx, param, value):
     # save the config file
     if os.path.exists(CONFIG_FILE):
         click.confirm(f"Overwrite the existing configuration file {CONFIG_FILE}?", abort=True)
-    init_config(CONFIG_FILE)
+    initialize_config(CONFIG_FILE)
     print("Created config file at", CONFIG_FILE)
     ctx.exit()
 

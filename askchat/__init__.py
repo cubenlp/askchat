@@ -2,7 +2,7 @@
 
 __author__ = """Rex Wang"""
 __email__ = '1073853456@qq.com'
-__version__ = '1.1.4'
+__version__ = '1.1.5'
 
 import asyncio
 from pathlib import Path
@@ -57,7 +57,7 @@ async def show_resp(chat, **options):
     async for char in chat.async_stream_responses(textonly=True, **options):
         print(char, end='', flush=True)
         msg += char
-        await asyncio.sleep(0.01)
+        # await asyncio.sleep(0.01)
     if not msg.endswith('\n'):
         print() # add a newline if the message doesn't end with one
     return msg
@@ -68,16 +68,16 @@ def set_keys(config_file, keys):
         if value:
             set_key(config_file, key, value)
 
-def raw_config(config_file:str):
+def create_empty_config(config_file:str):
     """Empty config file."""
     if not CONFIG_PATH.exists():
         CONFIG_PATH.mkdir(parents=True)
     with open(config_file, "w") as f:
         f.write(raw_env_text)
 
-def init_config(config_file:str):
+def initialize_config(config_file:str):
     """Initialize the config file with the current environment variables."""
-    raw_config(config_file)
+    create_empty_config(config_file)
     set_keys(config_file, {
         "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY"),
         "OPENAI_API_MODEL": os.getenv("OPENAI_API_MODEL"),
@@ -88,7 +88,7 @@ def init_config(config_file:str):
 def write_config(config_file, api_key, model, base_url, api_base, overwrite=False):
     """Write the environment variables to a config file."""
     if overwrite or not config_file.exists():
-        raw_config(config_file)
+        create_empty_config(config_file)
     set_keys(config_file, {
         "OPENAI_API_KEY": api_key,
         "OPENAI_API_MODEL": model,

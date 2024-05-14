@@ -120,7 +120,7 @@ def config(name, api_key, base_url, api_base, model):
         return
     config_path = ENV_PATH / f'{name}.env' if name else MAIN_ENV_PATH
     if not config_path.exists():
-        click.echo(f"Environment '{config_path}' not found." +\
+        click.echo(f"Environment '{config_path}' not found.\n" +\
                    "Use `askenv new` to create a new environment." )
         return
     write_config(config_path, api_key, model, base_url, api_base)
