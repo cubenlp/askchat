@@ -140,7 +140,7 @@ def cli():
 @click.option('-r', '--regenerate', is_flag=True, help='Regenerate the last conversation')
 @click.option('-l', '--load', default=None, type=ChatFileCompletionType(), callback=load_chat_callback, expose_value=False, help='Load a conversation from a file')
 # Handling chat history
-@click.option('-p', '--print', is_flag=True, help='Print the last conversation or a specific conversation')
+@click.option('-p', is_flag=True, help='Print the last conversation or a specific conversation')
 @click.option('-s', '--save', callback=save_chat_callback, expose_value=False, help='Save the conversation to a file')
 @click.option('-d', '--delete', type=ChatFileCompletionType(), callback=delete_chat_callback, expose_value=False, help='Delete the conversation from a file')
 @click.option('--list', is_flag=True, callback=list_chats_callback, expose_value=False, help='List all the conversation files')
@@ -152,7 +152,7 @@ def cli():
 @click.option('-v', '--version', is_flag=True, callback=version_callback, expose_value=False, help='Print the version')
 @click.option('-o', '--option', multiple=True, type=(str, str), help='Additional options for show_resp in the form of key=value')
 def main( message, model, base_url, api_base, api_key, use_env
-        , c, regenerate, print, option):
+        , c, regenerate, p, option):
     """Interact with ChatGPT in terminal via chattool"""
     setup()
     message_text = ' '.join(message).strip()
@@ -168,7 +168,7 @@ def main( message, model, base_url, api_base, api_key, use_env
         os.environ['OPENAI_API_MODEL'] = model
     chattool.load_envs() # update the environment variables in chattool
     # print chat messages
-    if print:
+    if p:
         fname = message_text if message_text else '_last_chat'
         fname = f"{CONFIG_PATH}/{fname}.json"
         try:
@@ -216,7 +216,14 @@ def main( message, model, base_url, api_base, api_key, use_env
     else:
         option = {}
     # Add chat responses
-    chat.assistant(asyncio.run(show_resp(chat, **dict(option))))
+    if option.get('stream') in ['false', 0]:
+        option['stream'] = False
+        chat.getresponse(**option)
+        for text in chat.last_message:
+            print(text, end='', flush=True)
+    else:
+        chat.assistant(asyncio.run(show_resp(chat, **dict(option))))
+        
     chat.save(LAST_CHAT_FILE, mode='w')
 
 if __name__ == '__main__':
