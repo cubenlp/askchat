@@ -25,14 +25,14 @@ AskChat is a command-line tool for ChatGPT interaction, allowing you to call Cha
 
 <div align="center">
     <figure>
-        <figcaption>Run in Terminal</figcaption>
+        <div style="margin-top: 10px; color: #555;">Run in Terminal</div>
         <img src="docs/assets/svgs/hello.svg" alt="hello" width="480">
     </figure>
 </div>
 
 <div align="center">
     <figure>
-    <figcaption>Jupyter Lab</figcaption>
+    <div style="margin-top: 10px; color: #555;">Jupyter Lab</div>
     <img src="docs/assets/jupyter.gif" alt="jupyter" width="480">
     </figure>
 </div>
@@ -72,28 +72,28 @@ In addition, you can use `askchat` for more flexible dialogue and `askenv` to ma
 
 <div align="center">
     <figure>
-    <figcaption>1. API debugging</figcaption>
+    <div style="margin-top: 10px; color: #555;">1. API debugging</div>
     <img src="docs/assets/svgs/debug.svg" alt="debug" width="480">
     </figure>
 </div>
 
 <div align="center">
     <figure>
-    <figcaption>2. Get a list of available models</figcaption>
+    <div style="margin-top: 10px; color: #555;">2. Get a list of available models</div>
     <img src="docs/assets/svgs/validmodels.svg" alt="validmodels" width="480">
     </figure>
 </div>
 
 <div align="center">
     <figure>
-    <figcaption>3. Multi-turn dialogue, saving dialogues, loading dialogues, etc.</figcaption>
+    <div style="margin-top: 10px; color: #555;">3. Multi-turn dialogue, saving dialogues, loading dialogues, etc.</div>
     <img src="docs/assets/svgs/chatlog.svg" alt="chatlog" width="480">
     </figure>
 </div>
 
 <div align="center">
     <figure>
-    <figcaption>4. Specify parameters, using different models and APIs</figcaption>
+    <div style="margin-top: 10px; color: #555;">4. Specify parameters, using different models and APIs</div>
     <img src="docs/assets/svgs/para-models.svg" alt="para-models" width="480">
     </figure>
 </div>
@@ -152,14 +152,14 @@ Note: `--all-valid-models` will print all available models, including Embedding,
 
 <div align="center">
     <figure>
-    <figcaption>1. Create channel</figcaption>
+    <div style="margin-top: 10px; color: #555;">1. Create channel</div>
     <img src="docs/assets/svgs/askenv.svg" alt="askenv" width="480">
     </figure>
 </div>
 
 <div align="center">
     <figure>
-    <figcaption>2. Edit channel</figcaption>
+    <div style="margin-top: 10px; color: #555;">2. Edit channel</div>
     <img src="docs/assets/svgs/editenv.svg" alt="editenv" width="480">
     </figure>
 </div>

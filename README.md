@@ -199,8 +199,6 @@ ask hello world
     askenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
     ```
 
-## 问
-
-题和反馈
+## 问题和反馈
 
 使用过程中有任何问题或建议，欢迎提交 [Issue](https://github.com/cubenlp/askchat/issues)。
