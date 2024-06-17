@@ -149,10 +149,11 @@ def cli():
 @click.option('--debug', is_flag=True, callback=debug_log_callback, expose_value=False, help='Print debug log')
 @click.option('--valid-models', is_flag=True, callback=valid_models_callback, expose_value=False, help='Print valid models that contain "gpt" in their names')
 @click.option('--all-valid-models', is_flag=True, callback=all_valid_models_callback, expose_value=False, help='Print all valid models')
+@click.option('--print-curl', is_flag=True, help='Print the curl command for the request')
 @click.option('-v', '--version', is_flag=True, callback=version_callback, expose_value=False, help='Print the version')
 @click.option('-o', '--option', multiple=True, type=(str, str), help='Additional options for show_resp in the form of key=value')
 def main( message, model, base_url, api_base, api_key, use_env
-        , c, regenerate, p, option):
+        , c, regenerate, p, option, print_curl):
     """Interact with ChatGPT in terminal via chattool"""
     setup()
     message_text = ' '.join(message).strip()
@@ -215,9 +216,15 @@ def main( message, model, base_url, api_base, api_key, use_env
                 option[key] = float(value)
     else:
         option = {}
-    # Add chat responses
     if option.get('stream') in ['false', 0]:
         option['stream'] = False
+    else:
+        option['stream'] = True
+    if print_curl:
+        chat.print_curl(**option)
+        return 
+    # Add chat responses
+    if not option['stream']:
         chat.getresponse(**option)
         for text in chat.last_message:
             print(text, end='', flush=True)

@@ -137,6 +137,7 @@ Auxiliary features, such as generating configuration files, debugging logs, prin
 | Parameter                | Example                          | Explanation                           |
 |--------------------------|----------------------------------|---------------------------------------|
 | `--generate-config`      | `askchat --generate-config`      | Generate a configuration file, saved in `~/.askchat/.env` |
+| `--print-curl`          | `askchat hello --print-curl`     | Print the actual request URL          |
 | `--debug`                | `askchat --debug`                | Print debugging logs                  |
 | `--valid-models`         | `askchat --valid-models`         | Print a list of models containing "gpt" in their names |
 | `--all-valid-models`     | `askchat --all-valid-models`     | Print all available models            |

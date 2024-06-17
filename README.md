@@ -125,6 +125,7 @@ ask hello world
 | 参数                      | 示例                 | 解释                                       |
 |---------------------------|----------------------|--------------------------------------------|
 | `--generate-config`  | `askchat --generate-config` | 生成配置文件，保存在 `~/.askchat/.env` 中  |
+| `--print-url`       | `askchat hello --print-url` | 打印实际请求的 URL                        |
 | `--debug`            | `askchat --debug`    | 打印调试日志                                |
 | `--valid-models`     | `askchat --valid-models` | 打印包含 "gpt" 名称的模型列表            |
 | `--all-valid-models` | `askchat --all-valid-models` | 打印所有的模型                     |
