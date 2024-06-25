@@ -2,7 +2,7 @@
 
 __author__ = """Rex Wang"""
 __email__ = '1073853456@qq.com'
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 import asyncio
 from pathlib import Path
@@ -16,7 +16,7 @@ CONFIG_FILE = CONFIG_PATH / ".env"
 MAIN_ENV_PATH = Path.home() / '.askchat' / '.env'
 ENV_PATH = Path.home() / '.askchat' / 'envs'
 
-raw_env_text = f""""# Description: Env file for askchat.
+raw_env_text = f"""# Description: Env file for askchat.
 # Current version: {__version__}
 
 # The base url of the API (with suffix /v1)
