@@ -33,14 +33,19 @@ def list():
 @click.option('-b', '--base-url', default=None, help='Base URL of the API (without suffix `/v1`)')
 @click.option('--api-base', default=None, help='Base URL of the API (with suffix `/v1`)')
 @click.option('-m', '--model', default=None, help='Model name')
-def new(name, api_key, base_url, api_base, model):
+@click.option('--interactive', '-i', is_flag=True, default=False, help='Enable interactive mode for inputting options')
+def new(name, api_key, base_url, api_base, model, interactive):
     """Create a new environment configuration."""
     config_path = ENV_PATH / f'{name}.env'
     if config_path.exists():
         click.echo(f"Warning: Overwriting existing environment '{name}'.")
         click.confirm("Do you want to continue?", abort=True)
-    else:
-        click.echo(f"Environment '{name}' created.")
+    if interactive:
+        api_key = click.prompt('API key', default=api_key, hide_input=True)
+        base_url = click.prompt('Base URL of the API (without suffix `/v1`)', default=base_url)
+        default_api_base = f"{base_url}/v1" if base_url else api_base
+        api_base = click.prompt('Base URL of the API (with suffix `/v1`)', default=default_api_base)
+        model = click.prompt('Default model name', default=model)
     write_config(config_path, api_key, model, base_url, api_base, overwrite=True)
 
 @cli.command()
