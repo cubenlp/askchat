@@ -170,8 +170,7 @@ def main( message, model, base_url, api_base, api_key, use_env
     chattool.load_envs() # update the environment variables in chattool
     # print chat messages
     if p:
-        fname = message_text if message_text else '_last_chat'
-        fname = f"{CONFIG_PATH}/{fname}.json"
+        fname = f"{CONFIG_PATH}/{message_text}.json" if message_text else LAST_CHAT_FILE
         try:
             Chat().load(fname).print_log()
         except FileNotFoundError:
@@ -189,6 +188,9 @@ def main( message, model, base_url, api_base, api_key, use_env
             click.echo("You should have at least two messages in the conversation")
             return
         chat.pop()
+        if message_text: # user message
+            chat.pop()
+            chat.user(message_text)
     elif c: # continue the last conversation
         if not message_text:
             click.echo("Please specify message!")
