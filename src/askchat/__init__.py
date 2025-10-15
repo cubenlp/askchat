@@ -2,12 +2,10 @@
 
 __author__ = """Rex Wang"""
 __email__ = '1073853456@qq.com'
-__version__ = '1.2.3'
+__version__ = '2.0.0'
 
-import asyncio
 from pathlib import Path
 import click
-from dotenv import set_key
 import os
 
 # Main environment file

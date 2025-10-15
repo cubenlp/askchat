@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "askchat"
+dynamic = ["version"]
+description = "Interact with ChatGPT in terminal via chattool"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Rex Wang", email = "1073853456@qq.com"}
+]
+keywords = ["askchat"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+requires-python = ">=3.6"
+dependencies = [
+    "chattool>=3.2.0",
+    "python-dotenv>=0.17.0",
+    "Click>=8.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/cubenlp/askchat"
+Repository = "https://github.com/cubenlp/askchat"
+
+[project.scripts]
+ask = "askchat.ask:main"
+askchat = "askchat.cli:main"
+askenv = "askchat.askenv:cli"
+
+[project.optional-dependencies]
+dev = [
+    "pip==19.2.3",
+    "bump2version==0.5.11",
+    "wheel==0.33.6",
+    "watchdog==0.9.0",
+    "flake8==3.7.8",
+    "tox==3.14.0",
+    "coverage==4.5.4",
+    "Sphinx==1.8.5",
+    "twine==1.14.0",
+    "pytest==6.2.4"
+]
+test = [
+    "pytest>=3"
+]
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["askchat*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "askchat.__version__"}
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.pytest.ini_options]
+addopts = "--ignore=setup.py"
+testpaths = ["tests"]
+
+[tool.flake8]
+exclude = ["docs"]
+
+[tool.bdist_wheel]
+universal = true
