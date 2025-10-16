@@ -30,13 +30,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install .[test]
-        python -m pip install -r requirements_dev.txt
+        python -m pip install .[dev]
     - name: Test with pytest and coverage
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         OPENAI_API_BASE_URL: ${{ secrets.OPENAI_API_BASE_URL }}
       run: |
+        askchat hello
         pip install coverage
         coverage run -m pytest tests/
     - name: Upload coverage to Codecov

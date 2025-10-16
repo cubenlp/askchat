@@ -1,5 +1,6 @@
 import click
-from askchat import write_config, ENV_PATH, MAIN_ENV_PATH, EnvNameCompletionType
+from askchat import write_config, EnvNameCompletionType
+from chattool.const import CHATTOOL_ENV_DIR, CHATTOOL_ENV_FILE
 from dotenv import set_key
 
 help_message = """Manage askchat environments.
@@ -13,13 +14,13 @@ For bash users: eval "$(_ASKENV_COMPLETE=bash_source askenv)\""""
 @click.group(help=help_message)
 def cli():
     """askenv CLI for managing askchat environments."""
-    if not ENV_PATH.exists():
-        ENV_PATH.mkdir(parents=True)
+    if not CHATTOOL_ENV_DIR.exists():
+        CHATTOOL_ENV_DIR.mkdir(parents=True)
 
 @cli.command()
 def list():
     """List all environment configurations."""
-    configs = [env for env in ENV_PATH.glob('*.env')]
+    configs = [env for env in CHATTOOL_ENV_DIR.glob('*.env')]
     if configs:
         click.echo("Available environments:")
         for config in configs:
@@ -36,7 +37,7 @@ def list():
 @click.option('--interactive', '-i', is_flag=True, default=False, help='Enable interactive mode for inputting options')
 def new(name, api_key, base_url, api_base, model, interactive):
     """Create a new environment configuration."""
-    config_path = ENV_PATH / f'{name}.env'
+    config_path = CHATTOOL_ENV_DIR / f'{name}.env'
     if config_path.exists():
         click.echo(f"Warning: Overwriting existing environment '{name}'.")
         click.confirm("Do you want to continue?", abort=True)
@@ -54,7 +55,7 @@ def new(name, api_key, base_url, api_base, model, interactive):
 def delete(name, default):
     """Delete an environment configuration."""
     if default:
-        default_config_path = MAIN_ENV_PATH
+        default_config_path = CHATTOOL_ENV_DIR / 'default.env'
         if default_config_path.exists():
             default_config_path.unlink()
             click.echo("Default environment configuration deleted.")
@@ -64,7 +65,7 @@ def delete(name, default):
         if not name:
             click.echo("Please specify an environment name or use --default to delete the default configuration.")
             return
-        config_path = ENV_PATH / f'{name}.env'
+        config_path = CHATTOOL_ENV_DIR / f'{name}.env'
         if config_path.exists():
             config_path.unlink()
             click.echo(f"Environment '{name}' deleted.")
@@ -75,7 +76,7 @@ def delete(name, default):
 @click.argument('name', required=False, type=EnvNameCompletionType())
 def show(name):
     """Print environment variables. Show default if no name is provided."""
-    config_path = ENV_PATH / f'{name}.env' if name else MAIN_ENV_PATH
+    config_path = CHATTOOL_ENV_DIR / f'{name}.env' if name else CHATTOOL_ENV_FILE
     if config_path.exists():
         with config_path.open() as f:
             click.echo(f.read())
@@ -89,9 +90,9 @@ def show(name):
 @click.argument('name')
 def save(name):
     """Save the current environment variables to a file."""
-    if MAIN_ENV_PATH.exists():
-        content = MAIN_ENV_PATH.read_text()
-        config_path = ENV_PATH / f'{name}.env'
+    if CHATTOOL_ENV_FILE.exists():
+        content = CHATTOOL_ENV_FILE.read_text()
+        config_path = CHATTOOL_ENV_DIR / f'{name}.env'
         if config_path.exists():
             click.echo(f"Warning: Overwriting existing environment '{name}'.")
             click.confirm("Do you want to continue?", abort=True)
@@ -104,10 +105,10 @@ def save(name):
 @click.argument('name', type=EnvNameCompletionType())
 def use(name):
     """Activate an environment by replacing the .env file."""
-    config_path = ENV_PATH / f'{name}.env'
+    config_path = CHATTOOL_ENV_DIR / f'{name}.env'
     if config_path.exists():
         content = config_path.read_text()
-        MAIN_ENV_PATH.write_text(content)
+        CHATTOOL_ENV_FILE.write_text(content)
         click.echo(f"Environment '{name}' activated.")
     else:
         click.echo(f"Environment '{name}' not found.")
@@ -123,7 +124,7 @@ def config(name, api_key, base_url, api_base, model):
     if not any([api_key, base_url, api_base, model]):
         click.echo("No updates made. Provide at least one option to update.")
         return
-    config_path = ENV_PATH / f'{name}.env' if name else MAIN_ENV_PATH
+    config_path = CHATTOOL_ENV_DIR / f'{name}.env' if name else CHATTOOL_ENV_FILE
     if not config_path.exists():
         click.echo(f"Environment '{config_path}' not found.\n" +\
                    "Use `askenv new` to create a new environment." )

@@ -1,9 +1,7 @@
 import pytest
 from click.testing import CliRunner
-from askchat.askenv import cli
+from askchat.askenv import cli, CHATTOOL_ENV_DIR, CHATTOOL_ENV_FILE
 from pathlib import Path
-
-ENV_PATH = Path.home() / '.askchat' / 'envs'
 
 @pytest.fixture
 def runner():
@@ -14,7 +12,7 @@ def runner():
 def setup_env():
     """Fixture to set up and tear down an environment configuration."""
     env_name = "pytest_env"
-    config_path = ENV_PATH / f"{env_name}.env"
+    config_path = CHATTOOL_ENV_DIR / f"{env_name}.env"
     # Setup code before yield
     yield env_name, config_path
     # Teardown code after yield
