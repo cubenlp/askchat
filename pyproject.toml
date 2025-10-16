@@ -49,12 +49,9 @@ dev = [
     "flake8>=7.3.0",
     "tox>=4.0.0",
     "coverage>=4.5.4",
-    "Sphinx>=8.2.0",
-    "twine>=6.2.0",
-    "pytest>=8.4.2"
-]
-test = [
-    "pytest>=8.4.2"
+    "Sphinx",
+    "twine",
+    "pytest"
 ]
 
 [tool.setuptools]
