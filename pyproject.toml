@@ -51,7 +51,8 @@ dev = [
     "coverage",
     "Sphinx",
     "twine",
-    "pytest"
+    "pytest",
+    "build"
 ]
 
 [tool.setuptools]
