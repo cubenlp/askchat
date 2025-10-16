@@ -1,22 +1,19 @@
 """Main module."""
-
+import chattool
 import click, asyncio, askchat, chattool
-from pathlib import Path
 from pprint import pprint
 from dotenv import load_dotenv
 import asyncio, os, shutil
-from chattool import Chat, debug_log
-from pathlib import Path
-from askchat import (
-      show_resp, write_config, initialize_config
-    , ENV_PATH, MAIN_ENV_PATH
-    , CONFIG_PATH, CONFIG_FILE
-    , EnvNameCompletionType, ChatFileCompletionType
+from chattool import Chat, debug_log, ChatBase
+from chattool.const import (
+    CHATTOOL_CACHE_DIR, CHATTOOL_ENV_DIR, CHATTOOL_ENV_FILE
 )
+from .elements import EnvNameCompletionType, ChatFileCompletionType
+from .utils import show_resp, write_config, initialize_config
 
 # Version and Config Path
 VERSION = askchat.__version__
-LAST_CHAT_FILE = CONFIG_PATH / "_last_chat.json"
+LAST_CHAT_FILE = CHATTOOL_CACHE_DIR / "_last_chat.json"
 
 help_message = """Interact with ChatGPT in terminal via chattool.
 
@@ -28,20 +25,18 @@ For bash users: eval "$(_ASKCHAT_COMPLETE=bash_source askchat)\""""
 
 def setup():
     """Application setup: Ensure that necessary folders and files exist."""
-    os.makedirs(CONFIG_PATH, exist_ok=True)
-    if os.path.exists(CONFIG_FILE):
-        load_dotenv(CONFIG_FILE, override=True)
-    chattool.load_envs()
+    os.makedirs(CHATTOOL_ENV_DIR, exist_ok=True)
+    chattool.load_envs(CHATTOOL_ENV_FILE)
 
 # callback functions for general options
 def generate_config_callback(ctx, param, value):
     """Generate a configuration file by environment table."""
     if not value: return
     # save the config file
-    if os.path.exists(CONFIG_FILE):
-        click.confirm(f"Overwrite the existing configuration file {CONFIG_FILE}?", abort=True)
-    initialize_config(CONFIG_FILE)
-    print("Created config file at", CONFIG_FILE)
+    if os.path.exists(CHATTOOL_ENV_FILE):
+        click.confirm(f"Overwrite the existing configuration file {CHATTOOL_ENV_FILE}?", abort=True)
+    initialize_config(CHATTOOL_ENV_FILE)
+    print("Created config file at", CHATTOOL_ENV_FILE)
     ctx.exit()
 
 def debug_log_callback(ctx, param, value):
@@ -75,8 +70,8 @@ def save_chat_callback(ctx, param, value):
     if not value:
         return
     try:
-        shutil.copyfile(LAST_CHAT_FILE, CONFIG_PATH / f"{value}.json")
-        click.echo(f"Saved conversation to {CONFIG_PATH}/{value}.json")
+        shutil.copyfile(LAST_CHAT_FILE, CHATTOOL_CACHE_DIR / f"{value}.json")
+        click.echo(f"Saved conversation to {CHATTOOL_CACHE_DIR}/{value}.json")
     except FileNotFoundError:
         click.echo("No last conversation to save.")
     ctx.exit()
@@ -85,17 +80,17 @@ def delete_chat_callback(ctx, param, value):
     if not value:
         return
     try:
-        os.remove(CONFIG_PATH / f"{value}.json")
-        click.echo(f"Deleted conversation at {CONFIG_PATH}/{value}.json")
+        os.remove(CHATTOOL_CACHE_DIR / f"{value}.json")
+        click.echo(f"Deleted conversation at {CHATTOOL_CACHE_DIR}/{value}.json")
     except FileNotFoundError:
-        click.echo(f"The specified conversation {CONFIG_PATH}/{value}.json does not exist.")
+        click.echo(f"The specified conversation {CHATTOOL_CACHE_DIR}/{value}.json does not exist.")
     ctx.exit()
 
 def list_chats_callback(ctx, param, value):
     if not value:
         return
     click.echo("All conversation files:")
-    for file in CONFIG_PATH.glob("*.json"):
+    for file in CHATTOOL_CACHE_DIR.glob("*.json"):
         if not file.name.startswith("_"):
             click.echo(f" - {file.stem}")
     ctx.exit()
@@ -103,20 +98,20 @@ def list_chats_callback(ctx, param, value):
 def load_chat_callback(ctx, param, value):
     if not value: return
     try:
-        shutil.copyfile(CONFIG_PATH / f"{value}.json", LAST_CHAT_FILE)
-        click.echo(f"Loaded conversation from {CONFIG_PATH}/{value}.json")
+        shutil.copyfile(CHATTOOL_CACHE_DIR / f"{value}.json", LAST_CHAT_FILE)
+        click.echo(f"Loaded conversation from {CHATTOOL_CACHE_DIR}/{value}.json")
     except FileNotFoundError:
-        click.echo(f"The specified conversation {value} does not exist." +\
+        click.echo(f"The specified conversation {CHATTOOL_CACHE_DIR}/{value}.json does not exist." +\
                    "Please check the chat list with `--list` option.")
     ctx.exit()
 # callback function for --use-env option
 def use_env_callback(ctx, param, value):
     if not value:
         return
-    env_file = ENV_PATH / f"{value}.env"
+    env_file = CHATTOOL_ENV_DIR / f"{value}.env"
     if env_file.exists():
         content = env_file.read_text()
-        MAIN_ENV_PATH.write_text(content)
+        CHATTOOL_ENV_FILE.write_text(content)
         setup()
         click.echo(f"Environment '{value}' activated.")
     else:
@@ -160,17 +155,16 @@ def main( message, model, base_url, api_base, api_key, use_env
     if use_env and not message_text: return
     # set values for the environment variables
     if api_key:
-        os.environ['OPENAI_API_KEY'] = api_key
+        chattool.const.OPENAI_API_KEY = api_key
     if base_url:
-        os.environ['OPENAI_API_BASE_URL'] = base_url
+        chattool.const.OPENAI_API_BASE_URL = base_url
     if api_base:
-        os.environ['OPENAI_API_BASE'] = api_base
+        chattool.const.OPENAI_API_BASE = api_base
     if model:
-        os.environ['OPENAI_API_MODEL'] = model
-    chattool.load_envs() # update the environment variables in chattool
+        chattool.const.OPENAI_API_MODEL = model
     # print chat messages
     if p:
-        fname = f"{CONFIG_PATH}/{message_text}.json" if message_text else LAST_CHAT_FILE
+        fname = f"{CHATTOOL_CACHE_DIR}/{message_text}.json" if message_text else LAST_CHAT_FILE
         try:
             Chat().load(fname).print_log()
         except FileNotFoundError:
@@ -180,7 +174,7 @@ def main( message, model, base_url, api_base, api_key, use_env
     chat = Chat()
     if regenerate:
         try:
-            chat = Chat.load(LAST_CHAT_FILE)
+            chat = Chat().load(LAST_CHAT_FILE)
         except FileNotFoundError:
             click.echo("No last conversation found. Starting a new conversation.")
             return
@@ -196,7 +190,7 @@ def main( message, model, base_url, api_base, api_key, use_env
             click.echo("Please specify message!")
             return
         try:
-            chat = Chat.load(LAST_CHAT_FILE)
+            chat = Chat().load(LAST_CHAT_FILE)
         except FileNotFoundError:
             click.echo("No last conversation found. Starting a new conversation.")
             return
