@@ -4,7 +4,7 @@ import click, asyncio, askchat, chattool
 from pprint import pprint
 from dotenv import load_dotenv
 import asyncio, os, shutil
-from chattool import Chat, debug_log, ChatBase
+from chattool import Chat, debug_log
 from chattool.const import (
     CHATTOOL_CACHE_DIR, CHATTOOL_ENV_DIR, CHATTOOL_ENV_FILE
 )
