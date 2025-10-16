@@ -1,9 +1,7 @@
 import pytest
 from click.testing import CliRunner
-from askchat.askenv import cli
+from askchat.askenv import cli, CHATTOOL_ENV_DIR, CHATTOOL_ENV_FILE
 from pathlib import Path
-
-CHATTOOL_ENV_DIR = Path.home() / '.askchat' / 'envs'
 
 @pytest.fixture
 def runner():
