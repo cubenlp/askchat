@@ -1,11 +1,11 @@
 import os
 from dotenv import set_key
-from chattool import create_env_file, ChatOpenAI
+from chattool import create_env_file, Chat
 
 # common functions
-async def show_resp(chat:ChatOpenAI, **options):
+async def show_resp(chat:Chat, **options):
     msg = ''
-    async for resp in chat.get_response_stream_async(**options):
+    async for resp in chat.async_get_response_stream(**options):
         print(resp.delta_content, end='', flush=True)
         msg += resp.delta_content
         # await asyncio.sleep(0.01)
