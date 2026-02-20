@@ -42,6 +42,10 @@ pip install askchat --upgrade
 配置环境变量：
 
 ```bash
+# 初始化配置（交互式）
+chatenv init -i
+
+# 或者手动设置环境变量
 export OPENAI_API_KEY="your-api-key"
 export OPENAI_API_BASE="https://api.openai.com/v1"
 export OPENAI_API_BASE_URL="https://api.openai.com"
@@ -52,13 +56,13 @@ export OPENAI_API_MODEL="gpt-3.5-turbo"
 
 ## 使用方法
 
-使用环境变量，进行简单的问答：
+配置完成后，进行简单的问答：
 
 ```bash
 ask hello world
 ```
 
-除此之外，可使用 `askchat` 进行更灵活的对话，使用 `askenv` 管理环境配置。
+除此之外，可使用 `askchat` 进行更灵活的对话。
 
 ## AskChat
 
@@ -114,7 +118,6 @@ ask hello world
 | `--api-base`    | `--api-base https://api.example.com/v1` | 设置 Base URL  |
 | `--api-key` | `-a sk-xxxxxxx` | 提供 OpenAI API 密钥                |
 | `--option` | `-o top_p 1 temperature 0.5` | 设置请求参数 |
-| `--use-env` | `-u prod` | 使用指定配置文件加载环境变量，详见 [AskEnv](#askenv) |
 
 注：一些模型 API，比如智谱，使用 `/v4` 作为 API 的基础路径，这时得用 `--api-base` 参数。
 
@@ -124,7 +127,6 @@ ask hello world
 
 | 参数                      | 示例                 | 解释                                       |
 |---------------------------|----------------------|--------------------------------------------|
-| `--generate-config`  | `askchat --generate-config` | 生成配置文件，保存在 `~/.askchat/.env` 中  |
 | `--print-url`       | `askchat hello --print-url` | 打印实际请求的 URL                        |
 | `--debug`            | `askchat --debug`    | 打印调试日志                                |
 | `--valid-models`     | `askchat --valid-models` | 打印包含 "gpt" 名称的模型列表            |
@@ -132,73 +134,6 @@ ask hello world
 | `--version`          | `askchat -v`         | `askchat` 的版本信息                    |
 
 注：`--all-valid-models` 会打印所有可用模型，包括 Embedding, dalle-3, tts 等，使用 `--valid-models` 可以过滤掉这些。
-
-## AskEnv
-
-`askenv` 用于管理不同的环境配置，包括创建、激活、删除等操作，便于在不同的渠道间切换。
-
-### 示例
-
-<div align="center">
-    <div style="margin-top: 10px; color: #555;">1. 创建渠道</div>
-    <img src="docs/assets/svgs/askenv.svg" alt="askenv" width="480">
-</div>
-
-<div align="center">
-    <div style="margin-top: 10px; color: #555;">2. 编辑渠道</div>
-    <img src="docs/assets/svgs/editenv.svg" alt="editenv" width="480">
-</div>
-
-### 基本用法
-
-1. 创建一个新的环境配置，使用 `new` 命令。
-
-    ```bash
-    askenv new <name> [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
-    ```
-
-    或者用 `askchat --generate-config` 从环境变量生成默认配置：
-
-    ```bash
-    askchat --generate-config
-    ```
-
-2. 激活某个环境，将其设置为当前使用的配置。
-
-    ```bash
-    askenv use <name>
-    ```
-
-3. 删除指定的环境配置文件。
-
-    ```bash
-    askenv delete <name>
-    askenv delete --default
-    ```
-
-4. 列出当前所有可用环境。
-
-    ```bash
-    askenv list
-    ```
-
-5. 显示指定环境的配置信息，如果没有指定环境名称，则显示默认环境的配置。
-
-    ```bash
-    askenv show [name]
-    ```
-
-6. 将当前激活的环境配置保存为指定名称的配置文件。
-
-    ```bash
-    askenv save <name>
-    ```
-
-7. 更新指定或默认环境配置的一项或多项设置。
-
-    ```bash
-    askenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
-    ```
 
 ## 问题和反馈
 
