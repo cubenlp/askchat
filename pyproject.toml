@@ -25,7 +25,7 @@ classifiers = [
 ]
 requires-python = ">=3.6"
 dependencies = [
-    "chattool>=6.0.0",
+    "chattool>=5.0.0",
     "python-dotenv>=0.17.0",
     "Click>=8.0",
     "platformdirs>=2.0.0"
