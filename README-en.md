@@ -46,6 +46,10 @@ pip install askchat --upgrade
 Configure environment variables:
 
 ```bash
+# Initialize configuration (interactive)
+chatenv init -i
+
+# Or manually set environment variables
 export OPENAI_API_KEY="your-api-key"
 export OPENAI_API_BASE="https://api.openai.com/v1"
 export OPENAI_API_BASE_URL="https://api.openai.com"
@@ -56,13 +60,13 @@ Note: The `OPENAI_API_BASE` variable takes precedence over the `OPENAI_API_BASE_
 
 ## How to Use
 
-Use environment variables for simple question and answer:
+After configuration, use environment variables for simple question and answer:
 
 ```bash
 ask hello world
 ```
 
-In addition, you can use `askchat` for more flexible dialogue and `askenv` to manage environment configurations.
+In addition, you can use `askchat` for more flexible dialogue.
 
 ## AskChat
 
@@ -126,7 +130,6 @@ Default parameters for `askchat`, these are used for direct interaction with Cha
 | `--api-base`     | `--api-base https://api.example.com/v1` | Set the Base URL        |
 | `--api-key`      | `-a sk-xxxxxxx`                   | Provide the OpenAI API key         |
 | `--option`       | `-o top_p 1 temperature 0.5`      | Set request parameters             |
-| `--use-env`      | `-u prod`                         | Load environment variables from a specified config, see [AskEnv](#askenv) |
 
 Note: Some model APIs, such as Zhishu, use `/v4` as the API base path, in which case use the `--api-base` parameter.
 
@@ -136,7 +139,6 @@ Auxiliary features, such as generating configuration files, debugging logs, prin
 
 | Parameter                | Example                          | Explanation                           |
 |--------------------------|----------------------------------|---------------------------------------|
-| `--generate-config`      | `askchat --generate-config`      | Generate a configuration file, saved in `~/.askchat/.env` |
 | `--print-curl`          | `askchat hello --print-curl`     | Print the actual request URL          |
 | `--debug`                | `askchat --debug`                | Print debugging logs                  |
 | `--valid-models`         | `askchat --valid-models`         | Print a list of models containing "gpt" in their names |
@@ -144,77 +146,6 @@ Auxiliary features, such as generating configuration files, debugging logs, prin
 | `--version`              | `askchat -v`                     | Version information of `askchat`      |
 
 Note: `--all-valid-models` will print all available models, including Embedding, dalle-3, tts, etc., use `--valid-models` to filter these out.
-
-## AskEnv
-
-`askenv` is used to manage different environment configurations, including creating, activating, deleting, etc., making it easy to switch between different channels.
-
-### Examples
-
-<div align="center">
-    <figure>
-    <div style="margin-top: 10px; color: #555;">1. Create channel</div>
-    <img src="docs/assets/svgs/askenv.svg" alt="askenv" width="480">
-    </figure>
-</div>
-
-<div align="center">
-    <figure>
-    <div style="margin-top: 10px; color: #555;">2. Edit channel</div>
-    <img src="docs/assets/svgs/editenv.svg" alt="editenv" width="480">
-    </figure>
-</div>
-
-### Basic Usage
-
-1. Create a new environment configuration using the `new` command.
-
-    ```bash
-    askenv new <name> [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
-    ```
-
-    Or generate a default config from environment variables using `askchat --generate-config`:
-
-    ```bash
-    askchat --generate-config
-    ```
-
-2. Activate a certain environment, setting it as the currently used configuration.
-
-    ```bash
-    askenv use <name>
-    ```
-
-3. Delete a specified environment configuration file.
-
-    ```bash
-    askenv delete <name>
-    askenv delete --default
-    ```
-
-4. List all currently available environments.
-
-    ```bash
-    askenv list
-    ```
-
-5. Show configuration info of a specified environment, or the default environment if no name is specified.
-
-    ```bash
-    askenv show [name]
-    ```
-
-6. Save the currently activated environment configuration as a specified name's configuration file.
-
-    ```bash
-    askenv save <name>
-    ```
-
-7. Update one or more settings of a specified or default environment configuration.
-
-    ```bash
-    askenv config [name] [-a API_KEY] [-b BASE_URL] [--api-base API_BASE] [-m MODEL]
-    ```
 
 ## Issues and Feedback
 
